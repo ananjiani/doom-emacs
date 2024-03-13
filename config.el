@@ -46,7 +46,7 @@
 (setq org-directory "~/Documents/org-roam")
 
 (after! org
-  (setq org-log-refile 'note)
+  (setq org-log-done 'note)
   (setq org-agenda-prefix-format '(
                                    (agenda  . " %i %?-12t% s%e ") ;; file name + org-agenda-entry-type
                                    (timeline  . "  % s")

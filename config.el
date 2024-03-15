@@ -44,6 +44,7 @@
 ;; change `org-directory'. It must be set before org loads!
 
 (setq org-directory "~/Documents/org-roam")
+(setq org-roam-directory "~/Documents/org-roam")
 
 (after! org
   (setq org-log-done 'note)
@@ -121,7 +122,6 @@
   (setq org-capture-templates `(
                                 ("i" "Inbox" entry (file "inbox.org") "* TODO %?\n/Entered on/ %U"))))
 
-(setq org-roam-directory "~/Documents/org-roam")
 ;; (org-roam-db-autosync-mode)
 ;; (setq org-roam-database-connector 'emacsql-sqlite-builtin)
 
@@ -228,6 +228,12 @@
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
 (use-package! org-remark
+  :init
+  (setq org-remark-notes-file-name
+        (lambda ()
+          (concat "~/Documents/org-roam/"
+                  (file-name-base (org-remark-notes-file-name-function))
+                  ".org")))
   :bind (;; :bind keyword also implicitly defers org-remark itself.
          ;; Keybindings before :map is set for global-map.
          ("C-c n m" . org-remark-mark)
@@ -240,12 +246,7 @@
          ("C-c n d" . org-remark-delete)))
 
 (after! org-remark
-  (tooltip-mode +1)
-  (setq org-remark-notes-file-name
-        (lambda ()
-          (concat "~/Documents/org-roam/"
-                  (file-name-base (org-remark-notes-file-name-function))
-                  ".org"))))
+  (tooltip-mode +1))
 
 (use-package! consult-org-roam
   :after org-roam
@@ -313,7 +314,7 @@
             (setq encr-file-exists t))
         (progn
           (message "Encrypting file %s" current-file-name)
-          (shell-command (concat "rage -R ~/.ssh/id_ed25519.pub -e " current-file-name " -o " encr-file-name))
+          (shell-command (concat "rage -R " age-default-recipient " -e " current-file-name " -o " encr-file-name))
           (when (file-exists-p encr-file-name)
             (setq encr-file-exists t))))
       (when encr-file-exists
@@ -330,8 +331,8 @@
   :commands (age-file-enable)
   :init
   (setq! age-program "rage"
-         age-default-identity "~/.ssh/id_ed25519"
-         age-default-recipient "~/.ssh/id_ed25519.pub")
+         age-default-identity "~/.dotfiles/secrets/emacs/emacs"
+         age-default-recipient "~/.dotfiles/secrets/emacs/emacs.pub")
   (age-file-enable))
 
 (use-package! websocket
@@ -349,31 +350,6 @@
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
 
-
-
-(defun my/org-roam-copy-todo-to-today ()
-  (interactive)
-  (let ((org-refile-keep t) ;; Set this to nil to delete the original!
-        (org-roam-dailies-capture-templates
-         '(("t" "tasks" entry "%?"
-            :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
-        (org-after-refile-insert-hook #'save-buffer)
-        today-file
-        pos)
-    (save-window-excursion
-      (org-roam-dailies--capture (current-time) t)
-      (setq today-file (buffer-file-name))
-      (setq pos (point)))
-
-    ;; Only refile if the target file is different than the current file
-    (unless (equal (file-truename today-file)
-                   (file-truename (buffer-file-name)))
-      (org-refile nil nil (list "Tasks" today-file nil pos)))))
-
-(add-to-list 'org-after-todo-state-change-hook
-             (lambda ()
-               (when (equal org-state "DONE")
-                 (my/org-roam-copy-todo-to-today))))
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;

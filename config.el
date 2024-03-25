@@ -350,6 +350,9 @@
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
 
+(after! lsp-mode
+  ;; https://github.com/emacs-lsp/lsp-mode/issues/3577#issuecomment-1709232622
+  (delete 'lsp-terraform lsp-client-packages))
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;

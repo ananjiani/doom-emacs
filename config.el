@@ -227,8 +227,8 @@
 (add-hook 'nov-mode-hook 'org-agenda-open-hook)
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
-(use-package! org-remark
-  :init
+(use-package! :init
+  org-remark
   (setq org-remark-notes-file-name
         (lambda ()
           (concat "~/Documents/org-roam/"

@@ -227,8 +227,8 @@
 (add-hook 'nov-mode-hook 'org-agenda-open-hook)
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
-(use-package! :init
-  org-remark
+(use-package! org-remark
+  :init
   (setq org-remark-notes-file-name
         (lambda ()
           (concat "~/Documents/org-roam/"
@@ -353,6 +353,9 @@
 (after! lsp-mode
   ;; https://github.com/emacs-lsp/lsp-mode/issues/3577#issuecomment-1709232622
   (delete 'lsp-terraform lsp-client-packages))
+
+(use-package! flymake-ruff
+  :hook (python-mode . flymake-ruff-load))
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;

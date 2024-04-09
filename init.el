@@ -25,7 +25,8 @@
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        ;;ivy               ; a search engine for love and life
-       (vertico +icons)                 ; the search engine of the future
+       (vertico +icons +childframe)                 ; the search engine of the future
+       ;; (corfu +icons +orderless +dabbrev)
 
        :ui
        ;;deft              ; notational velocity for Emacs
@@ -34,9 +35,9 @@
        ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
        (emoji +ascii +github +unicode)
                                         ; 🙂
-       hl-todo                ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
-       indent-guides            ; highlighted indent columns
-       (ligatures +fira) ; ligatures and symbols to make your code pretty again
+       hl-todo            ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
+       indent-guides      ; highlighted indent columns
+       (ligatures +fira)  ; ligatures and symbols to make your code pretty again
        ;;minimap           ; show a map of the code on the side
        modeline    ; snazzy, Atom-inspired modeline, plus API
        ;;nav-flash         ; blink cursor line after big motions
@@ -89,7 +90,7 @@
        ;;ansible
        ;;biblio            ; Writes a PhD for you (citation needed)
        ;;collab            ; buffers with friends
-       (debugger +lsp) ; FIXME stepping through code, to help you add bugs
+       (debugger +lsp)       ; FIXME stepping through code, to help you add bugs
        direnv
        ;;docker
        editorconfig      ; let someone else argue about tabs vs spaces
@@ -101,13 +102,13 @@
        magit                    ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
-       pdf               ; pdf enhancements
+       pdf                              ; pdf enhancements
        ;;prodigy           ; FIXME managing external services & code builders
        ;;rgb               ; creating color strings
        ;;taskrunner        ; taskrunner for all your projects
        ;;terraform         ; infrastructure as code
        ;;tmux              ; an API for interacting with tmux
-       tree-sitter ; syntax and parsing, sitting in a tree...
+       tree-sitter                    ; syntax and parsing, sitting in a tree...
        ;;upload            ; map local to remote projects via ssh/ftp
 
        :os
@@ -154,13 +155,13 @@
        ;;lua               ; one-based indices? one-based indices
        markdown            ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
-       (nix +lsp)                              ; I hereby declare "nix geht mehr!"
+       (nix +lsp)                       ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
        (org +roam2 +journal)            ; organize your plain life in plain text
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
-       (python +lsp +pyright +ruff +tree-sitter)
+       (python +lsp +tree-sitter)
                                         ; beautiful is better than ugly
        ;;qt                ; the 'cutest' gui framework ever
        ;;racket            ; a DSL for DSLs

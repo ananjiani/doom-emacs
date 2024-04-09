@@ -172,7 +172,6 @@
 ;; After the last group, the agenda will display items that didn't
 ;; match any of these groups, with the default order position of 99
 
-
 (setq org-super-agenda-header-map (make-sparse-keymap))
 
 (org-super-agenda-mode t)
@@ -210,43 +209,6 @@
                 :desc "Directory" "d" #'fzf-directory
                 :desc "Home" "h" #'fzf-home)))
 
-(defun my-nov-font-setup ()
-  (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
-                           :height 1.0))
-
-(after! nov
-  (evil-collection-nov-setup)
-  (org-remark-mode)
-  (org-remark-nov-mode)
-  (setq nov-text-width t)
-  (setq visual-fill-column-center-text t))
-
-(add-hook 'nov-mode-hook 'visual-line-mode)
-(add-hook 'nov-mode-hook 'visual-fill-column-mode)
-(add-hook 'nov-mode-hook 'my-nov-font-setup)
-(add-hook 'nov-mode-hook 'org-agenda-open-hook)
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-
-(use-package! org-remark
-  :init
-  (setq org-remark-notes-file-name
-        (lambda ()
-          (concat "~/Documents/org-roam/"
-                  (file-name-base (org-remark-notes-file-name-function))
-                  ".org")))
-  :bind (;; :bind keyword also implicitly defers org-remark itself.
-         ;; Keybindings before :map is set for global-map.
-         ("C-c n m" . org-remark-mark)
-         ("C-c n l" . org-remark-mark-line) ; new in v1.3
-         :map org-remark-mode-map
-         ("C-c n o" . org-remark-open)
-         ("C-c n ]" . org-remark-view-next)
-         ("C-c n [" . org-remark-view-prev)
-         ("C-c n r" . org-remark-remove)
-         ("C-c n d" . org-remark-delete)))
-
-(after! org-remark
-  (tooltip-mode +1))
 
 (use-package! consult-org-roam
   :after org-roam
@@ -350,8 +312,9 @@
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
 
-(use-package! flymake-ruff
-  :hook (python-mode . flymake-ruff-load))
+(after! lsp-mode
+  (setq lsp-pylsp-plugins-ruff-enabled t
+        lsp-pylsp-plugins-mypy-enabled t))
 
 (after! dap-mode
   (setq dap-python-debugger 'debugpy))
@@ -386,6 +349,8 @@
       :desc "dap breakpoint condition"   "c" #'dap-breakpoint-condition
       :desc "dap breakpoint hit count"   "h" #'dap-breakpoint-hit-condition
       :desc "dap breakpoint log message" "l" #'dap-breakpoint-log-message)
+
+
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;

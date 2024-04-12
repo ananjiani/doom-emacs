@@ -55,7 +55,6 @@
 (unpin! org-roam)
 (package! org-roam-ui)
 (package! git-auto-commit-mode)
-(package! flymake-ruff)
 (package! gptel)
 ;; Doom's packages are pinned to a specific commit and updated from release to
 ;; release. The `unpin!' macro allows you to unpin single packages...

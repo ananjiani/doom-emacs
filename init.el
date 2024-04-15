@@ -21,7 +21,7 @@
        ;;layout            ; auie,ctsrnm is the superior home row
 
        :completion
-       company      ; the ultimate code completion backend
+       (company +childframe)      ; the ultimate code completion backend
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        ;;ivy               ; a search engine for love and life
@@ -70,7 +70,7 @@
        :emacs
        dired             ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
-       ;;ibuffer         ; interactive buffer management
+       (ibuffer +icons)         ; interactive buffer management
        undo              ; persistent, smarter undo for your inevitable mistakes
        vc                ; version-control and Emacs, sitting in a tree
 

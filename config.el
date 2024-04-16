@@ -121,7 +121,10 @@
 
   ;; (setq org-agenda-todo-keyword-format "")
   (setq org-capture-templates `(
-                                ("i" "Inbox" entry (file "inbox.org") "* TODO %?\n/Entered on/ %U"))))
+                                ("i" "Inbox" entry (file "inbox.org") "* TODO %?\n/Entered on/ %U")
+                                ("n" "NAARPR Dallas Meeting Agenda Item" item (file+headline "~/Documents/org-roam/naarpr-dallas-notes/meeting-notes.org" "Next Meeting Agenda") "- %?")
+                                ("u" "Unit Meeting Agenda Item" item (file+headline "~/Documents/org-roam/red-notes/pc-meeting-notes.org" "Next Meeting Agenda") "- %?")
+                                )))
 (after! org-roam
   (setq org-roam-capture-templates
         '(("d" "default" plain
@@ -373,7 +376,6 @@
       :desc "dap breakpoint condition"   "c" #'dap-breakpoint-condition
       :desc "dap breakpoint hit count"   "h" #'dap-breakpoint-hit-condition
       :desc "dap breakpoint log message" "l" #'dap-breakpoint-log-message)
-
 ;; accept completion from copilot and fallback to company
 (use-package! copilot
   :hook (prog-mode . copilot-mode)

@@ -49,6 +49,7 @@
 
 (after! org
   (setq org-log-done 'note)
+  (setq org-agenda-hide-tags-regexp "agenda\\|@ammar\\|daily")
   (setq org-agenda-prefix-format '(
                                    (agenda  . " %i %?-12t% s%e ") ;; file name + org-agenda-entry-type
                                    (timeline  . "  % s")
@@ -122,6 +123,7 @@
   ;; (setq org-agenda-todo-keyword-format "")
   (setq org-capture-templates `(
                                 ("i" "Inbox" entry (file "inbox.org") "* TODO %?\n/Entered on/ %U")
+                                ("w" "Work" entry (file "~/Documents/org-roam/work/work-projects.org") "* TODO %?\n/Entered on/ %U")
                                 ("n" "NAARPR Dallas Meeting Agenda Item" item (file+headline "~/Documents/org-roam/naarpr-dallas-notes/meeting-notes.org" "Next Meeting Agenda") "- %?")
                                 ("u" "Unit Meeting Agenda Item" item (file+headline "~/Documents/org-roam/red-notes/pc-meeting-notes.org" "Next Meeting Agenda") "- %?")
                                 )))

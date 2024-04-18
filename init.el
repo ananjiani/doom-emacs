@@ -21,11 +21,12 @@
        ;;layout            ; auie,ctsrnm is the superior home row
 
        :completion
-       company      ; the ultimate code completion backend
+       (company +childframe)      ; the ultimate code completion backend
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        ;;ivy               ; a search engine for love and life
-       (vertico +icons)                 ; the search engine of the future
+       (vertico +icons +childframe)                 ; the search engine of the future
+       ;; (corfu +icons +orderless +dabbrev)
 
        :ui
        ;;deft              ; notational velocity for Emacs
@@ -34,10 +35,9 @@
        ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
        (emoji +ascii +github +unicode)
                                         ; 🙂
-       hl-todo                ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
-       ;;hydra
-       indent-guides            ; highlighted indent columns
-       (ligatures +fira) ; ligatures and symbols to make your code pretty again
+       hl-todo            ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
+       indent-guides      ; highlighted indent columns
+       (ligatures +fira)  ; ligatures and symbols to make your code pretty again
        ;;minimap           ; show a map of the code on the side
        modeline    ; snazzy, Atom-inspired modeline, plus API
        ;;nav-flash         ; blink cursor line after big motions
@@ -51,7 +51,7 @@
        vi-tilde-fringe        ; fringe tildes to mark beyond EOB
        window-select          ; visually switch windows
        workspaces             ; tab emulation, persistence & separate workspaces
-       ;;zen               ; distraction-free coding or writing
+       zen               ; distraction-free coding or writing
 
        :editor
        (evil +everywhere)               ; come to the dark side, we have cookies
@@ -62,7 +62,7 @@
        lispy          ; vim for lisp, for people who don't like vim
        ;;multiple-cursors  ; editing in many places at once
        ;;objed             ; text object editing for the innocent
-       parinfer                         ; turn lisp into python, sort of
+       ;; parinfer                         ; turn lisp into python, sort of
        ;;rotate-text       ; cycle region at point between text candidates
        snippets                       ; my elves. They type so I don't have to
        word-wrap                      ; soft wrapping with language-aware indent
@@ -70,7 +70,7 @@
        :emacs
        dired             ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
-       ;;ibuffer         ; interactive buffer management
+       (ibuffer +icons)         ; interactive buffer management
        undo              ; persistent, smarter undo for your inevitable mistakes
        vc                ; version-control and Emacs, sitting in a tree
 
@@ -81,7 +81,7 @@
        vterm                            ; the best terminal emulation in Emacs
 
        :checkers
-       syntax        ; tasing you for every semicolon you forget
+       (syntax +childframe) ; tasing you for every semicolon you forget
        ;; (spell +flyspell)
                                         ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
@@ -90,7 +90,7 @@
        ;;ansible
        ;;biblio            ; Writes a PhD for you (citation needed)
        ;;collab            ; buffers with friends
-       (debugger +lsp) ; FIXME stepping through code, to help you add bugs
+       (debugger +lsp)       ; FIXME stepping through code, to help you add bugs
        direnv
        ;;docker
        editorconfig      ; let someone else argue about tabs vs spaces
@@ -98,17 +98,17 @@
        (eval +overlay)       ; run code, run (also, repls)
        ;;gist              ; interacting with github gists
        lookup                   ; navigate your code and its documentation
-       lsp                      ; M-x vscode
+       (lsp +peek) ; M-x vscode
        magit                    ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
-       pdf               ; pdf enhancements
+       pdf                              ; pdf enhancements
        ;;prodigy           ; FIXME managing external services & code builders
        ;;rgb               ; creating color strings
        ;;taskrunner        ; taskrunner for all your projects
        ;;terraform         ; infrastructure as code
        ;;tmux              ; an API for interacting with tmux
-       tree-sitter ; syntax and parsing, sitting in a tree...
+       tree-sitter                    ; syntax and parsing, sitting in a tree...
        ;;upload            ; map local to remote projects via ssh/ftp
 
        :os
@@ -138,7 +138,8 @@
        ;;fsharp            ; ML stands for Microsoft's Language
        ;;fstar             ; (dependent) types and (monadic) effects and Z3
        ;;gdscript          ; the language you waited for
-       (go +lsp +tree-sitter)         ; the hipster dialect
+       ;; (go +lsp +tree-sitter)
+                                        ; the hipster dialect
        ;;(graphql +lsp)    ; Give queries a REST
        ;;(haskell +lsp)    ; a language that's lazier than I am
        ;;hy                ; readability of scheme w/ speed of python
@@ -154,13 +155,13 @@
        ;;lua               ; one-based indices? one-based indices
        markdown            ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
-       (nix +lsp)                              ; I hereby declare "nix geht mehr!"
+       (nix +lsp)                       ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (org +roam2 +journal)            ; organize your plain life in plain text
+       (org +roam2 +pandoc)
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
-       (python +lsp +pyright)
+       (python +lsp +tree-sitter)
                                         ; beautiful is better than ugly
        ;;qt                ; the 'cutest' gui framework ever
        ;;racket            ; a DSL for DSLs

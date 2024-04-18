@@ -48,8 +48,6 @@
 (package! fzf)
 (package! hyperbole :disable t)
 (package! shrface :disable t)
-(package! nov)
-(package! org-remark)
 (package! consult-org-roam)
 (package! age)
 (package! anki
@@ -57,6 +55,9 @@
 (unpin! org-roam)
 (package! org-roam-ui)
 (package! git-auto-commit-mode)
+(package! gptel)
+(package! copilot
+  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
 ;; Doom's packages are pinned to a specific commit and updated from release to
 ;; release. The `unpin!' macro allows you to unpin single packages...
 ;; (unpin! pinned-package)

@@ -32,12 +32,13 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-gruvbox)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type 'relative)
-(setq doom-font (font-spec :family "Hack" :size 18 :weight 'normal))
+(setq doom-font (font-spec :family "Hack" :size 20))
+(setq doom-variable-pitch-font (font-spec :family "Inter" :size 20))
 (setq vterm-timer-delay 0.01
       vterm-shell "fish")
 ;; If you use `org' and don't want your org files in the default location below,
@@ -48,6 +49,7 @@
 
 (after! org
   (setq org-log-done 'note)
+  (setq org-agenda-hide-tags-regexp "agenda\\|@ammar\\|daily")
   (setq org-agenda-prefix-format '(
                                    (agenda  . " %i %?-12t% s%e ") ;; file name + org-agenda-entry-type
                                    (timeline  . "  % s")
@@ -120,7 +122,34 @@
 
   ;; (setq org-agenda-todo-keyword-format "")
   (setq org-capture-templates `(
-                                ("i" "Inbox" entry (file "inbox.org") "* TODO %?\n/Entered on/ %U"))))
+                                ("i" "Inbox" entry (file "inbox.org") "* TODO %?\n/Entered on/ %U")
+                                ("w" "Work" entry (file "~/Documents/org-roam/work/work-projects.org") "* TODO %?\n/Entered on/ %U")
+                                ("n" "NAARPR Dallas Meeting Agenda Item" item (file+headline "~/Documents/org-roam/naarpr-dallas-notes/meeting-notes.org" "Next Meeting Agenda") "- %?")
+                                ("u" "Unit Meeting Agenda Item" item (file+headline "~/Documents/org-roam/red-notes/pc-meeting-notes.org" "Next Meeting Agenda") "- %?")
+                                )))
+(after! org-roam
+  (setq org-roam-capture-templates
+        '(("d" "default" plain
+           "%?"
+           :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("z" "zettelkasten" plain
+           "%?"
+           :if-new (file+head "zk/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("o" "organizing" plain
+           "%?"
+           :if-new (file+head "red-notes/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("b" "book notes" plain
+           "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"
+           :if-new (file+head "literature/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t))))
+
+
+
+
+
 
 ;; (org-roam-db-autosync-mode)
 ;; (setq org-roam-database-connector 'emacsql-sqlite-builtin)
@@ -170,7 +199,6 @@
 ;; After the last group, the agenda will display items that didn't
 ;; match any of these groups, with the default order position of 99
 
-
 (setq org-super-agenda-header-map (make-sparse-keymap))
 
 (org-super-agenda-mode t)
@@ -208,43 +236,6 @@
                 :desc "Directory" "d" #'fzf-directory
                 :desc "Home" "h" #'fzf-home)))
 
-(defun my-nov-font-setup ()
-  (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
-                           :height 1.0))
-
-(after! nov
-  (evil-collection-nov-setup)
-  (org-remark-mode)
-  (org-remark-nov-mode)
-  (setq nov-text-width t)
-  (setq visual-fill-column-center-text t))
-
-(add-hook 'nov-mode-hook 'visual-line-mode)
-(add-hook 'nov-mode-hook 'visual-fill-column-mode)
-(add-hook 'nov-mode-hook 'my-nov-font-setup)
-(add-hook 'nov-mode-hook 'org-agenda-open-hook)
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-
-(use-package! org-remark
-  :init
-  (setq org-remark-notes-file-name
-        (lambda ()
-          (concat "~/Documents/org-roam/"
-                  (file-name-base (org-remark-notes-file-name-function))
-                  ".org")))
-  :bind (;; :bind keyword also implicitly defers org-remark itself.
-         ;; Keybindings before :map is set for global-map.
-         ("C-c n m" . org-remark-mark)
-         ("C-c n l" . org-remark-mark-line) ; new in v1.3
-         :map org-remark-mode-map
-         ("C-c n o" . org-remark-open)
-         ("C-c n ]" . org-remark-view-next)
-         ("C-c n [" . org-remark-view-prev)
-         ("C-c n r" . org-remark-remove)
-         ("C-c n d" . org-remark-delete)))
-
-(after! org-remark
-  (tooltip-mode +1))
 
 (use-package! consult-org-roam
   :after org-roam
@@ -349,8 +340,51 @@
         org-roam-ui-open-on-start t))
 
 (after! lsp-mode
-  ;; https://github.com/emacs-lsp/lsp-mode/issues/3577#issuecomment-1709232622
-  (delete 'lsp-terraform lsp-client-packages))
+  (setq lsp-pylsp-plugins-ruff-enabled t
+        lsp-pylsp-plugins-mypy-enabled t))
+
+(after! dap-mode
+  (setq dap-python-debugger 'debugpy))
+
+(map! :map dap-mode-map
+      :leader
+      :prefix ("d" . "dap")
+      ;; basics
+      :desc "dap next"          "n" #'dap-next
+      :desc "dap step in"       "i" #'dap-step-in
+      :desc "dap step out"      "o" #'dap-step-out
+      :desc "dap continue"      "c" #'dap-continue
+      :desc "dap hydra"         "h" #'dap-hydra
+      :desc "dap debug restart" "r" #'dap-debug-restart
+      :desc "dap debug"         "s" #'dap-debug
+
+      ;; debug
+      :prefix ("dd" . "Debug")
+      :desc "dap debug recent"  "r" #'dap-debug-recent
+      :desc "dap debug last"    "l" #'dap-debug-last
+
+      ;; eval
+      :prefix ("de" . "Eval")
+      :desc "eval"                "e" #'dap-eval
+      :desc "eval region"         "r" #'dap-eval-region
+      :desc "eval thing at point" "s" #'dap-eval-thing-at-point
+      :desc "add expression"      "a" #'dap-ui-expressions-add
+      :desc "remove expression"   "d" #'dap-ui-expressions-remove
+
+      :prefix ("db" . "Breakpoint")
+      :desc "dap breakpoint toggle"      "b" #'dap-breakpoint-toggle
+      :desc "dap breakpoint condition"   "c" #'dap-breakpoint-condition
+      :desc "dap breakpoint hit count"   "h" #'dap-breakpoint-hit-condition
+      :desc "dap breakpoint log message" "l" #'dap-breakpoint-log-message)
+;; accept completion from copilot and fallback to company
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;

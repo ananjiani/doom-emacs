@@ -125,8 +125,6 @@
 ;; (org-roam-db-autosync-mode)
 ;; (setq org-roam-database-connector 'emacsql-sqlite-builtin)
 
-(define-key global-map (kbd "C-c c") 'org-capture)
-
 (setq org-super-agenda-groups
       '(;; Each group has an implicit boolean OR operator between its selectors.
         ;; Set order of multiple groups at once

@@ -109,7 +109,7 @@
 
 
           ("w" "Work"
-           ((org-ql-block '(and (category "work")
+   ((org-ql-block '(and (category "work")
                                 (todo "TODO"))
                           ((org-ql-block-header "Tasks")))
 
@@ -117,15 +117,17 @@
                                 (todo)
                                 (not (todo "TODO")))
 
-                          ((org-ql-block-header "Backlog")))))))
+                          ((org-ql-block-header "Backlog")))))
+          ("p" "Priority"
+           ((org-ql-block '(and (todo "TODO" "PROJ") (priority >= "C")))))))
 
 
   ;; (setq org-agenda-todo-keyword-format "")
   (setq org-capture-templates `(
                                 ("i" "Inbox" entry (file "inbox.org") "* TODO %?\n/Entered on/ %U")
                                 ("w" "Work" entry (file "~/Documents/org-roam/work/work-projects.org") "* TODO %?\n/Entered on/ %U")
-                                ("n" "NAARPR Dallas Meeting Agenda Item" item (file+headline "~/Documents/org-roam/naarpr-dallas-notes/meeting-notes.org" "Next Meeting Agenda") "- %?")
-                                ("u" "Unit Meeting Agenda Item" item (file+headline "~/Documents/org-roam/red-notes/pc-meeting-notes.org" "Next Meeting Agenda") "- %?")
+                                ("n" "NAARPR Dallas Meeting Agenda Item" item (file+headline "~/Documents/org-roam/naarpr-dallas-notes/meeting-notes.org" "Next Meeting") "- %?")
+                                ("u" "Unit Meeting Agenda Item" item (file+headline "~/Documents/org-roam/red-notes/pc-meeting-notes.org" "Next Meeting") "- %?")
                                 )))
 (after! org-roam
   (setq org-roam-capture-templates
@@ -164,7 +166,7 @@
          :tag "daily"
          :order 0
          :face 'warning)
-        (:order-multi (10 (:name "Unit (team)" :and (:category "unit" :not (:tag "@ammar")))
+        (:order-multi (11 (:name "Unit (team)" :and (:category "unit" :not (:tag "@ammar")))
                           (:name "NAARPR Dallas (team)" :and (:category "naarpr" :not (:tag "@ammar")))))
         (:name "❗ Overdue"
          :scheduled past
@@ -177,24 +179,24 @@
          :deadline today
          :order 2
          :face 'warning)
-
-        (:name "Work" :category "work" :order 4)
-        (:order-multi (5 (:name "Organizing" :and (:category "organizing" :not (:tag "naarpr")))
+        (:name "Priority" :priority "A" :order 3)
+        (:name "Work" :category "work" :order 5)
+        (:order-multi (6 (:name "Organizing" :and (:category "organizing" :not (:tag "naarpr")))
                          (:name "Unit" :and (:category "unit" :tag "@ammar"))
                          (:name "NAARPR Dallas" :and (:category "naarpr" :tag "@ammar"))))
 
-        (:name "IGF SPG" :category "igf" :order 6)
-        (:name "RARE" :category "rare" :order 7)
+        (:name "IGF SPG" :category "igf" :order 7)
+        (:name "RARE" :category "rare" :order 8)
 
-        (:order-multi (8 (:name "Tinkering" :category "tinker")
+        (:order-multi (9 (:name "Tinkering" :category "tinker")
                          (:name "Home Automation" :category "ha")
                          (:name "Weekly Habits" :tag "weekly")
-                         (:name "Daily Habits" :tag "daily")))
+                         ))
 
-        (:name "Personal" :category "personal" :order 3)
+        (:name "Personal" :category "personal" :order 4)
         ;; Groups supply their own section names when none are given
 
-        (:auto-category t :order 9)))
+        (:auto-category t :order 10)))
 
 ;; After the last group, the agenda will display items that didn't
 ;; match any of these groups, with the default order position of 99

@@ -133,6 +133,10 @@
            "%?"
            :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
            :unnarrowed t)
+          ("f" "fleeting" plain
+           "%?"
+           :if-new (file+head "fleeting/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
           ("z" "zettelkasten" plain
            "%?"
            :if-new (file+head "zk/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")

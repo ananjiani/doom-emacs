@@ -49,7 +49,8 @@
 
 (after! org
   (setq org-log-done 'note)
-  (setq org-agenda-hide-tags-regexp "agenda\\|@ammar\\|daily")
+  (setq org-agenda-remove-tags t)
+  ;; (setq org-agenda-hide-tags-little regexp "agenda\\|@ammar\\|daily")
   (setq org-agenda-prefix-format '(
                                    (agenda  . " %i %?-12t% s%e ") ;; file name + org-agenda-entry-type
                                    (timeline  . "  % s")
@@ -109,13 +110,13 @@
 
 
           ("w" "Work"
-   ((org-ql-block '(and (category "work")
-                                (todo "TODO"))
+           ((org-ql-block '(and (category "work")
+                                (todo "TODO" "PROJ"))
                           ((org-ql-block-header "Tasks")))
 
             (org-ql-block '(and (category "work")
                                 (todo)
-                                (not (todo "TODO")))
+                                (not (todo "TODO" "PROJ")))
 
                           ((org-ql-block-header "Backlog")))))
           ("p" "Priority"
@@ -126,6 +127,7 @@
   (setq org-capture-templates `(
                                 ("i" "Inbox" entry (file "inbox.org") "* TODO %?\n/Entered on/ %U")
                                 ("w" "Work" entry (file "~/Documents/org-roam/work/work-projects.org") "* TODO %?\n/Entered on/ %U")
+                                ("w" "Personal" entry (file+headline "~/Documents/org-roam/projects.org" "Personal") "* TODO %?\n/Entered on/ %U")
                                 ("n" "NAARPR Dallas Meeting Agenda Item" item (file+headline "~/Documents/org-roam/naarpr-dallas-notes/meeting-notes.org" "Next Meeting") "- %?")
                                 ("u" "Unit Meeting Agenda Item" item (file+headline "~/Documents/org-roam/red-notes/pc-meeting-notes.org" "Next Meeting") "- %?")
                                 )))
@@ -159,7 +161,6 @@
 
 ;; (org-roam-db-autosync-mode)
 ;; (setq org-roam-database-connector 'emacsql-sqlite-builtin)
-
 (setq org-super-agenda-groups
       '(;; Each group has an implicit boolean OR operator between its selectors.
         ;; Set order of multiple groups at once
@@ -184,7 +185,7 @@
          :order 2
          :face 'warning)
         (:name "Priority" :priority "A" :order 3)
-        (:name "Work" :category "work" :order 5)
+        (:name "Work" :category "work" :order 5 )
         (:order-multi (6 (:name "Organizing" :and (:category "organizing" :not (:tag "naarpr")))
                          (:name "Unit" :and (:category "unit" :tag "@ammar"))
                          (:name "NAARPR Dallas" :and (:category "naarpr" :tag "@ammar"))))
@@ -390,6 +391,7 @@
               ("TAB" . 'copilot-accept-completion)
               ("C-TAB" . 'copilot-accept-completion-by-word)
               ("C-<tab>" . 'copilot-accept-completion-by-word)))
+(setq copilot-indent-offset-warning-disable t)
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.

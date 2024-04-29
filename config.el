@@ -49,6 +49,7 @@
 
 (after! org
   (setq org-log-done 'note)
+  ;; (setq org-agenda-remove-tags t)
   (setq org-agenda-hide-tags-regexp "agenda\\|@ammar\\|daily")
   (setq org-agenda-prefix-format '(
                                    (agenda  . " %i %?-12t% s%e ") ;; file name + org-agenda-entry-type
@@ -147,6 +148,10 @@
           ("o" "organizing" plain
            "%?"
            :if-new (file+head "red-notes/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("w" "work" plain
+           "%?"
+           :if-new (file+head "work/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
            :unnarrowed t)
           ("b" "book notes" plain
            "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"

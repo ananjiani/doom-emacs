@@ -49,8 +49,7 @@
 
 (after! org
   (setq org-log-done 'note)
-  (setq org-agenda-remove-tags t)
-  ;; (setq org-agenda-hide-tags-little regexp "agenda\\|@ammar\\|daily")
+  (setq org-agenda-hide-tags-regexp "agenda\\|@ammar\\|daily")
   (setq org-agenda-prefix-format '(
                                    (agenda  . " %i %?-12t% s%e ") ;; file name + org-agenda-entry-type
                                    (timeline  . "  % s")
@@ -127,7 +126,7 @@
   (setq org-capture-templates `(
                                 ("i" "Inbox" entry (file "inbox.org") "* TODO %?\n/Entered on/ %U")
                                 ("w" "Work" entry (file "~/Documents/org-roam/work/work-projects.org") "* TODO %?\n/Entered on/ %U")
-                                ("w" "Personal" entry (file+headline "~/Documents/org-roam/projects.org" "Personal") "* TODO %?\n/Entered on/ %U")
+                                ("p" "Personal" entry (file+headline "~/Documents/org-roam/projects.org" "Personal") "* TODO %?\n/Entered on/ %U")
                                 ("n" "NAARPR Dallas Meeting Agenda Item" item (file+headline "~/Documents/org-roam/naarpr-dallas-notes/meeting-notes.org" "Next Meeting") "- %?")
                                 ("u" "Unit Meeting Agenda Item" item (file+headline "~/Documents/org-roam/red-notes/pc-meeting-notes.org" "Next Meeting") "- %?")
                                 )))
@@ -164,15 +163,10 @@
 (setq org-super-agenda-groups
       '(;; Each group has an implicit boolean OR operator between its selectors.
         ;; Set order of multiple groups at once
-        ;; (:discard (:and (:category "unit " :not (:tag "@ammar"))))
-        ;; (:discard (:and (:tag "naarpr" :not (:tag "@ammar"))))
-
         (:name "Habits"
          :tag "daily"
          :order 0
          :face 'warning)
-        (:order-multi (11 (:name "Unit (team)" :and (:category "unit" :not (:tag "@ammar")))
-                          (:name "NAARPR Dallas (team)" :and (:category "naarpr" :not (:tag "@ammar")))))
         (:name "❗ Overdue"
          :scheduled past
          :deadline past
@@ -190,17 +184,19 @@
                          (:name "Unit" :and (:category "unit" :tag "@ammar"))
                          (:name "NAARPR Dallas" :and (:category "naarpr" :tag "@ammar"))))
 
-        (:name "IGF SPG" :category "igf" :order 7)
-        (:name "RARE" :category "rare" :order 8)
+        ;; (:name "IGF SPG" :category "igf" :order 7)
+        ;; (:name "RARE" :category "rare" :order 8)
 
-        (:order-multi (9 (:name "Tinkering" :category "tinker")
-                         (:name "Home Automation" :category "ha")
-                         (:name "Weekly Habits" :tag "weekly")
-                         ))
+        ;; (:order-multi (9 (:name "Tinkering" :category "tinker")
+        ;;                  (:name "Home Automation" :category "ha")
+        ;;                  (:name "Weekly Habits" :tag "weekly")
+        ;;                  ))
 
-        (:name "Personal" :category "personal" :order 4)
-        ;; Groups supply their own section names when none are given
+        ;; (:name "Personal" :category "personal" :order 4)
+        ;; ;; Groups supply their own section names when none are given
 
+        (:order-multi (11 (:name "Unit (team)" :and (:category "unit" :not (:tag "@ammar")))
+                          (:name "NAARPR Dallas (team)" :and (:category "naarpr" :not (:tag "@ammar")))))
         (:auto-category t :order 10)))
 
 ;; After the last group, the agenda will display items that didn't

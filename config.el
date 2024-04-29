@@ -169,15 +169,10 @@
 (setq org-super-agenda-groups
       '(;; Each group has an implicit boolean OR operator between its selectors.
         ;; Set order of multiple groups at once
-        ;; (:discard (:and (:category "unit " :not (:tag "@ammar"))))
-        ;; (:discard (:and (:tag "naarpr" :not (:tag "@ammar"))))
-
         (:name "Habits"
          :tag "daily"
          :order 0
          :face 'warning)
-        (:order-multi (11 (:name "Unit (team)" :and (:category "unit" :not (:tag "@ammar")))
-                          (:name "NAARPR Dallas (team)" :and (:category "naarpr" :not (:tag "@ammar")))))
         (:name "❗ Overdue"
          :scheduled past
          :deadline past
@@ -195,17 +190,19 @@
                          (:name "Unit" :and (:category "unit" :tag "@ammar"))
                          (:name "NAARPR Dallas" :and (:category "naarpr" :tag "@ammar"))))
 
-        (:name "IGF SPG" :category "igf" :order 7)
-        (:name "RARE" :category "rare" :order 8)
+        ;; (:name "IGF SPG" :category "igf" :order 7)
+        ;; (:name "RARE" :category "rare" :order 8)
 
-        (:order-multi (9 (:name "Tinkering" :category "tinker")
-                         (:name "Home Automation" :category "ha")
-                         (:name "Weekly Habits" :tag "weekly")
-                         ))
+        ;; (:order-multi (9 (:name "Tinkering" :category "tinker")
+        ;;                  (:name "Home Automation" :category "ha")
+        ;;                  (:name "Weekly Habits" :tag "weekly")
+        ;;                  ))
 
-        (:name "Personal" :category "personal" :order 4)
-        ;; Groups supply their own section names when none are given
+        ;; (:name "Personal" :category "personal" :order 4)
+        ;; ;; Groups supply their own section names when none are given
 
+        (:order-multi (11 (:name "Unit (team)" :and (:category "unit" :not (:tag "@ammar")))
+                          (:name "NAARPR Dallas (team)" :and (:category "naarpr" :not (:tag "@ammar")))))
         (:auto-category t :order 10)))
 
 ;; After the last group, the agenda will display items that didn't

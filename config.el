@@ -50,7 +50,7 @@
 (after! org
   (setq org-log-done 'note)
   ;; (setq org-agenda-remove-tags t)
-  (setq org-agenda-hide-tags-regexp "agenda\\|@ammar\\|daily")
+  (setq org-agenda-hide-tags-regexp "meeting\\|agenda\\|@ammar\\|daily")
   (setq org-agenda-prefix-format '(
                                    (agenda  . " %i %?-12t% s%e ") ;; file name + org-agenda-entry-type
                                    (timeline  . "  % s")

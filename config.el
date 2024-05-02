@@ -144,7 +144,7 @@
            :unnarrowed t)
           ("z" "zettelkasten" plain
            "%?"
-           :if-new (file+head "zk/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :if-new (file+head "zk/%<%Y%m%d%H%M%S>-${slug}.org" "${title}\n\n-tags :: ")
            :unnarrowed t)
           ("o" "organizing" plain
            "%?"

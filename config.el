@@ -395,6 +395,7 @@
               ("C-<tab>" . 'copilot-accept-completion-by-word)))
 (setq copilot-indent-offset-warning-disable t)
 
+(setq yas-snippet-dirs (append yas-snippet-dirs '("~/Documents/org-roam/red-notes/.snippets")))
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;

@@ -185,6 +185,7 @@
          :order 2
          :face 'warning)
         (:name "Priority" :priority "A" :order 3)
+        (:name "Priority B" :priority "B" :order 4)
         (:name "Work" :category "work" :order 5 )
         (:order-multi (6 (:name "Organizing" :and (:category "organizing" :not (:tag "naarpr")))
                          (:name "Unit" :and (:category "unit" :tag "@ammar"))
@@ -211,7 +212,7 @@
 (setq org-super-agenda-header-map (make-sparse-keymap))
 
 (org-super-agenda-mode t)
-(setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
+;; (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
 
 (defun my/org-roam-list-notes-by-tag (tag-name)
   (mapcar #'org-roam-node-file
@@ -396,6 +397,12 @@
 (setq copilot-indent-offset-warning-disable t)
 
 (setq yas-snippet-dirs (append yas-snippet-dirs '("~/Documents/org-roam/red-notes/.snippets")))
+
+(after! citar
+  (setq citar-bibliography '("~/Documents/org-roam/literature/references.bib"))
+  (setq citar-library-paths '("~/Documents/org-roam/library"))
+  (setq citar-notes-paths '("~/Documents/org-roam/literature")))
+
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;

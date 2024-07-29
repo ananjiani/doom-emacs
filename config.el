@@ -95,6 +95,21 @@
           ("u" "Unit"
            ((org-ql-block '(and (todo "TODO")
                                 (tags "@ammar")
+                                (category "unit" "naarpr"))
+                          ((org-ql-block-header "Ammar's Tasks")))
+            (org-ql-block '(and (todo "TODO")
+                                (not (tags "@ammar"))
+                                (category "unit" "naarpr"))
+                          ((org-ql-block-header "Everyone else's Tasks")))
+
+            (org-ql-block '(and (todo)
+                                (not (todo "TODO"))
+                                (category "unit" "naarpr"))
+                          ((org-ql-block-header "Backlog")))))
+
+          ("o" "Unit Only"
+           ((org-ql-block '(and (todo "TODO")
+                                (tags "@ammar")
                                 (category "unit"))
                           ((org-ql-block-header "Ammar's Tasks")))
             (org-ql-block '(and (todo "TODO")
@@ -106,7 +121,6 @@
                                 (not (todo "TODO"))
                                 (category "unit"))
                           ((org-ql-block-header "Backlog")))))
-
 
 
           ("w" "Work"
@@ -153,6 +167,13 @@
           ("w" "work" plain
            "%?"
            :if-new (file+head "work/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("n" "literature note" plain
+           "%?"
+           :target
+           (file+head
+            "%(expand-file-name (or citar-org-roam-subdir \"\") org-roam-directory)/literature/${citar-citekey}.org"
+            "#+title: ${note-title} (${citar-date})\n#+created: %U\n#+last_modified: %U\n\n")
            :unnarrowed t)
           ("b" "book notes" plain
            "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"
@@ -228,7 +249,7 @@
 (defun org-agenda-open-hook()
   (my/org-roam-refresh-agenda-list)
   (olivetti-mode)
-  (olivetti-set-width 120))
+  (olivetti-set-width 150))
 
 (add-hook 'org-agenda-mode-hook 'org-agenda-open-hook)
 (with-eval-after-load 'org (global-org-modern-mode))
@@ -401,8 +422,13 @@
 (after! citar
   (setq citar-bibliography '("~/Documents/org-roam/literature/references.bib"))
   (setq citar-library-paths '("~/Documents/org-roam/library"))
-  (setq citar-notes-paths '("~/Documents/org-roam/literature")))
+  (setq citar-notes-paths '("~/Documents/org-roam/literature"))
+  (setq citar-org-roam-capture-template-key "n"))
 
+(after! org-noter
+  (setq org-noter-highlight-selected-text t))
+
+(setq browse-url-browser-function 'browse-url-firefox)
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;

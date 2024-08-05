@@ -50,7 +50,7 @@
 (after! org
   (setq org-log-done 'note)
   ;; (setq org-agenda-remove-tags t)
-  (setq org-agenda-hide-tags-regexp "meeting\\|agenda\\|@ammar\\|daily")
+  (setq org-agenda-hide-tags-regexp "meeting\\|agenda\\|@ammar\\|daily\\|naarpr")
   (setq org-agenda-prefix-format '(
                                    (agenda  . " %i %?-12t% s%e ") ;; file name + org-agenda-entry-type
                                    (timeline  . "  % s")
@@ -372,7 +372,8 @@
 
 (after! lsp-mode
   (setq lsp-pylsp-plugins-ruff-enabled t
-        lsp-pylsp-plugins-mypy-enabled t))
+        lsp-pylsp-plugins-mypy-enabled t
+        lsp-nix-nixd-server-path "nixd"))
 
 (after! dap-mode
   (setq dap-python-debugger 'debugpy))

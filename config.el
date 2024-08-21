@@ -38,7 +38,7 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type 'relative)
 (setq doom-font (font-spec :family "Hack" :size 20))
-(setq doom-variable-pitch-font (font-spec :family "Inter" :size 20))
+(setq doom-variable-pitch-font (font-spec :family "Inter" :size 24))
 (setq vterm-timer-delay 0.01
       vterm-shell "fish")
 ;; If you use `org' and don't want your org files in the default location below,
@@ -48,6 +48,7 @@
 (setq org-roam-directory "~/Documents/org-roam")
 
 (after! org
+  (setq org-startup-folded 'fold)
   (setq org-log-done 'note)
   ;; (setq org-agenda-remove-tags t)
   (setq org-agenda-hide-tags-regexp "meeting\\|agenda\\|@ammar\\|daily\\|naarpr")
@@ -96,6 +97,7 @@
            ((org-ql-block '(and (todo "TODO")
                                 (tags "@ammar")
                                 (category "unit" "naarpr"))
+
                           ((org-ql-block-header "Ammar's Tasks")))
             (org-ql-block '(and (todo "TODO")
                                 (not (tags "@ammar"))
@@ -173,7 +175,7 @@
            :target
            (file+head
             "%(expand-file-name (or citar-org-roam-subdir \"\") org-roam-directory)/literature/${citar-citekey}.org"
-            "#+title: ${note-title} (${citar-date})\n#+created: %U\n#+last_modified: %U\n\n")
+            "#+title: ${note-title} (${citar-date})\n#+created: %U\n#+last_modified: %U\n\n- tags ::/n/n* Notes")
            :unnarrowed t)
           ("b" "book notes" plain
            "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"
@@ -427,9 +429,14 @@
   (setq citar-org-roam-capture-template-key "n"))
 
 (after! org-noter
-  (setq org-noter-highlight-selected-text t))
+  (setq org-noter-highlight-selected-text t
+        org-noter-always-create-frame nil))
 
 (setq browse-url-browser-function 'browse-url-firefox)
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+(add-hook 'nov-mode-hook 'olivetti-mode)
+(add-hook 'nov-mode-hook 'variable-pitch-mode)
+(add-hook 'eww-mode-hook 'olivetti-mode)
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;

@@ -80,51 +80,20 @@
   (setq org-agenda-custom-commands
         '(("n" "NAARPR Dallas"
            ((org-ql-block '(and (todo "TODO")
-                                (tags "@ammar")
-                                (tags "naarpr"))
-                          ((org-ql-block-header "Ammar's Tasks")))
-            (org-ql-block '(and (todo "TODO")
-                                (not (tags "@ammar"))
-                                (tags "naarpr"))
-                          ((org-ql-block-header "Everyone else's Tasks")))
+                                (category "naarpr"))
+                          ((org-ql-block-header "Tasks")))
             (org-ql-block '(and (todo)
                                 (not (todo "TODO"))
-                                (tags "naarpr"))
+                                (category "naarpr"))
                           ((org-ql-block-header "Backlog")))))
-
-
           ("u" "Unit"
            ((org-ql-block '(and (todo "TODO")
-                                (tags "@ammar")
-                                (category "unit" "naarpr"))
-
-                          ((org-ql-block-header "Ammar's Tasks")))
-            (org-ql-block '(and (todo "TODO")
-                                (not (tags "@ammar"))
-                                (category "unit" "naarpr"))
-                          ((org-ql-block-header "Everyone else's Tasks")))
-
-            (org-ql-block '(and (todo)
-                                (not (todo "TODO"))
-                                (category "unit" "naarpr"))
-                          ((org-ql-block-header "Backlog")))))
-
-          ("o" "Unit Only"
-           ((org-ql-block '(and (todo "TODO")
-                                (tags "@ammar")
                                 (category "unit"))
-                          ((org-ql-block-header "Ammar's Tasks")))
-            (org-ql-block '(and (todo "TODO")
-                                (not (tags "@ammar"))
-                                (category "unit"))
-                          ((org-ql-block-header "Everyone else's Tasks")))
-
+                          ((org-ql-block-header "Tasks")))
             (org-ql-block '(and (todo)
                                 (not (todo "TODO"))
                                 (category "unit"))
                           ((org-ql-block-header "Backlog")))))
-
-
           ("w" "Work"
            ((org-ql-block '(and (category "work")
                                 (todo "TODO" "PROJ"))
@@ -190,44 +159,27 @@
 ;; (org-roam-db-autosync-mode)
 ;; (setq org-roam-database-connector 'emacsql-sqlite-builtin)
 (setq org-super-agenda-groups
+      '((:auto-parent t)))
+(setq org-super-agenda-groups
       '(;; Each group has an implicit boolean OR operator between its selectors.
         ;; Set order of multiple groups at once
+        (:name "Reschedule"
+         :scheduled past
+         :face 'shadow)
         (:name "Habits"
          :tag "daily"
-         :order 0
          :face 'warning)
         (:name "❗ Overdue"
-         :scheduled past
          :deadline past
-         :order 1
          :face 'error)
         (:name "📅 Today"
          :date today
          :scheduled today
          :deadline today
-         :order 2
          :face 'warning)
-        (:name "Priority" :priority "A" :order 3)
-        (:name "Priority B" :priority "B" :order 4)
-        (:name "Work" :category "work" :order 5 )
-        (:order-multi (6 (:name "Organizing" :and (:category "organizing" :not (:tag "naarpr")))
-                         (:name "Unit" :and (:category "unit" :tag "@ammar"))
-                         (:name "NAARPR Dallas" :and (:category "naarpr" :tag "@ammar"))))
-
-        ;; (:name "IGF SPG" :category "igf" :order 7)
-        ;; (:name "RARE" :category "rare" :order 8)
-
-        ;; (:order-multi (9 (:name "Tinkering" :category "tinker")
-        ;;                  (:name "Home Automation" :category "ha")
-        ;;                  (:name "Weekly Habits" :tag "weekly")
-        ;;                  ))
-
-        ;; (:name "Personal" :category "personal" :order 4)
-        ;; ;; Groups supply their own section names when none are given
-
-        (:order-multi (11 (:name "Unit (team)" :and (:category "unit" :not (:tag "@ammar")))
-                          (:name "NAARPR Dallas (team)" :and (:category "naarpr" :not (:tag "@ammar")))))
-        (:auto-category t :order 10)))
+        (:auto-parent t :category "naarpr")
+        (:auto-outline-path t)
+        (:auto-category t)))
 
 ;; After the last group, the agenda will display items that didn't
 ;; match any of these groups, with the default order position of 99

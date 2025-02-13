@@ -76,55 +76,25 @@
           ("ha" ,(list (nerd-icons-faicon "nf-fa-home")) nil nil :ascent center)
           ("personal" ,(list (nerd-icons-mdicon "nf-md-human")) nil nil :ascent center)
           ("work" ,(list (nerd-icons-faicon "nf-fa-graduation_cap")) nil nil :ascent center)))
+  (setq org-agenda-tags-column -125)
 
   (setq org-agenda-custom-commands
         '(("n" "NAARPR Dallas"
            ((org-ql-block '(and (todo "TODO")
-                                (tags "@ammar")
-                                (tags "naarpr"))
-                          ((org-ql-block-header "Ammar's Tasks")))
-            (org-ql-block '(and (todo "TODO")
-                                (not (tags "@ammar"))
-                                (tags "naarpr"))
-                          ((org-ql-block-header "Everyone else's Tasks")))
+                                (category "naarpr"))
+                          ((org-ql-block-header "Tasks")))
             (org-ql-block '(and (todo)
                                 (not (todo "TODO"))
-                                (tags "naarpr"))
+                                (category "naarpr"))
                           ((org-ql-block-header "Backlog")))))
-
-
           ("u" "Unit"
            ((org-ql-block '(and (todo "TODO")
-                                (tags "@ammar")
-                                (category "unit" "naarpr"))
-
-                          ((org-ql-block-header "Ammar's Tasks")))
-            (org-ql-block '(and (todo "TODO")
-                                (not (tags "@ammar"))
-                                (category "unit" "naarpr"))
-                          ((org-ql-block-header "Everyone else's Tasks")))
-
-            (org-ql-block '(and (todo)
-                                (not (todo "TODO"))
-                                (category "unit" "naarpr"))
-                          ((org-ql-block-header "Backlog")))))
-
-          ("o" "Unit Only"
-           ((org-ql-block '(and (todo "TODO")
-                                (tags "@ammar")
                                 (category "unit"))
-                          ((org-ql-block-header "Ammar's Tasks")))
-            (org-ql-block '(and (todo "TODO")
-                                (not (tags "@ammar"))
-                                (category "unit"))
-                          ((org-ql-block-header "Everyone else's Tasks")))
-
+                          ((org-ql-block-header "Tasks")))
             (org-ql-block '(and (todo)
                                 (not (todo "TODO"))
                                 (category "unit"))
                           ((org-ql-block-header "Backlog")))))
-
-
           ("w" "Work"
            ((org-ql-block '(and (category "work")
                                 (todo "TODO" "PROJ"))
@@ -146,7 +116,7 @@
                                 ("p" "Personal" entry (file+headline "~/Documents/org-roam/projects.org" "Personal") "* TODO %?\n/Entered on/ %U")
                                 ("r" "Red Reading List" item (file"~/Documents/org-roam/red-notes/red-reading-list.org") "- %?")
                                 ("n" "NAARPR Dallas Meeting Agenda Item" item (file+headline "~/Documents/org-roam/naarpr-dallas-notes/meeting-notes.org" "Next Meeting") "- %?")
-                                ("u" "Unit Meeting Agenda Item" item (file+headline "~/Documents/org-roam/red-notes/pc-meeting-notes.org" "Next Meeting") "- %?")
+                                ("u" "Unit Meeting Agenda Item" item (file+headline "~/Documents/org-roam/unit-notes/pc-meeting-notes.org" "Next Meeting") "- %?")
                                 )))
 (after! org-roam
   (setq org-roam-capture-templates
@@ -192,42 +162,26 @@
 (setq org-super-agenda-groups
       '(;; Each group has an implicit boolean OR operator between its selectors.
         ;; Set order of multiple groups at once
+        (:order-multi (99 (:name "Unit (team)" :and (:category "unit" :not (:tag "@ammar")))
+                          (:name "NAARPR Dallas (team)" :and (:category "naarpr" :not (:tag "@ammar")))))
+        (:name "Reschedule"
+         :scheduled past
+         :face 'error)
         (:name "Habits"
-         :tag "daily"
-         :order 0
+         :tag "habit"
          :face 'warning)
         (:name "❗ Overdue"
-         :scheduled past
          :deadline past
-         :order 1
          :face 'error)
         (:name "📅 Today"
          :date today
          :scheduled today
          :deadline today
-         :order 2
          :face 'warning)
-        (:name "Priority" :priority "A" :order 3)
-        (:name "Priority B" :priority "B" :order 4)
-        (:name "Work" :category "work" :order 5 )
-        (:order-multi (6 (:name "Organizing" :and (:category "organizing" :not (:tag "naarpr")))
-                         (:name "Unit" :and (:category "unit" :tag "@ammar"))
-                         (:name "NAARPR Dallas" :and (:category "naarpr" :tag "@ammar"))))
-
-        ;; (:name "IGF SPG" :category "igf" :order 7)
-        ;; (:name "RARE" :category "rare" :order 8)
-
-        ;; (:order-multi (9 (:name "Tinkering" :category "tinker")
-        ;;                  (:name "Home Automation" :category "ha")
-        ;;                  (:name "Weekly Habits" :tag "weekly")
-        ;;                  ))
-
-        ;; (:name "Personal" :category "personal" :order 4)
-        ;; ;; Groups supply their own section names when none are given
-
-        (:order-multi (11 (:name "Unit (team)" :and (:category "unit" :not (:tag "@ammar")))
-                          (:name "NAARPR Dallas (team)" :and (:category "naarpr" :not (:tag "@ammar")))))
-        (:auto-category t :order 10)))
+        (:name "Important"
+         :priority "A"
+         )
+        (:auto-category t)))
 
 ;; After the last group, the agenda will display items that didn't
 ;; match any of these groups, with the default order position of 99
@@ -250,8 +204,10 @@
 ;; Build the agenda list the first time for the session
 (defun org-agenda-open-hook()
   (my/org-roam-refresh-agenda-list)
+  (toggle-truncate-lines 1)
   (olivetti-mode)
-  (olivetti-set-width 150))
+  (olivetti-set-width 150)
+  )
 
 (add-hook 'org-agenda-mode-hook 'org-agenda-open-hook)
 (with-eval-after-load 'org (global-org-modern-mode))

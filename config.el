@@ -140,16 +140,11 @@
            "%?"
            :if-new (file+head "work/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
            :unnarrowed t)
-          ("n" "literature note" plain
-           "%?"
-           :target
+          ("n" "literature note" plain (file "roam-templates/literature-note.org")
+           :if-new
            (file+head
             "%(expand-file-name (or citar-org-roam-subdir \"\") org-roam-directory)/literature/${citar-citekey}.org"
-            "#+title: ${note-title} (${citar-date})\n#+created: %U\n#+last_modified: %U\n\n- tags ::/n/n* Notes")
-           :unnarrowed t)
-          ("b" "book notes" plain
-           "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"
-           :if-new (file+head "literature/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+            "#+title: ${note-title} (${citar-date})\n#+created: %U\n#+last_modified: %U")
            :unnarrowed t))))
 
 

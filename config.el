@@ -382,11 +382,13 @@
 (add-hook 'nov-mode-hook 'variable-pitch-mode)
 (add-hook 'eww-mode-hook 'olivetti-mode)
 
-(setq gptel-model 'deepseek-reasoner
-      gptel-backend (gptel-make-deepseek "DeepSeek"
-                      :stream t
-                      :key gptel-api-key)
-      gptel-default-mode 'org-mode)
+(after! gptel
+  (setq gptel-model 'deepseek-reasoner
+        gptel-backend (gptel-make-deepseek "DeepSeek"
+                        :stream t
+                        :key gptel-api-key)
+        gptel-default-mode 'org-mode)
+  )
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.

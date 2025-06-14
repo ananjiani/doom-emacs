@@ -214,17 +214,6 @@
 (setq +format-on-save-enabled-modes
       '(not emacs-lisp-mode))
 
-(defun fzf-home ()
-  (interactive)
-  (fzf-find-file-in-dir "~"))
-
-(map! :leader
-      (:prefix ("z" . "Fuzzy Find")
-               (:desc "Current directory" "f" #'fzf
-                :desc "Directory" "d" #'fzf-directory
-                :desc "Home" "h" #'fzf-home)))
-
-
 (use-package! consult-org-roam
   :after org-roam
   :init
@@ -392,6 +381,12 @@
 (add-hook 'nov-mode-hook 'olivetti-mode)
 (add-hook 'nov-mode-hook 'variable-pitch-mode)
 (add-hook 'eww-mode-hook 'olivetti-mode)
+
+(setq gptel-model 'deepseek-reasoner
+      gptel-backend (gptel-make-deepseek "DeepSeek"
+                      :stream t
+                      :key gptel-api-key)
+      gptel-default-mode 'org-mode)
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.

@@ -332,6 +332,29 @@
                                                   '(:installVale :json-false
                                                     :syncOnStartup :json-false))))
 
+  ;; Vale code action for adding words to vocabulary  
+  (defun my/vale-add-word-at-point ()
+    "Add the word at point to Vale's accept.txt vocabulary."
+    (interactive)
+    (let ((word (thing-at-point 'word t)))
+      (when word
+        (let ((vale-vocab-file (expand-file-name "~/Documents/org-roam/.vale/config/vocabularies/OrgRoam/accept.txt")))
+          (message "Adding '%s' to Vale vocabulary" word)
+          ;; Append word to file
+          (with-temp-buffer
+            (insert word "\n")
+            (append-to-file (point-min) (point-max) vale-vocab-file))
+          (message "Successfully added '%s' to Vale vocabulary" word)
+          ;; Restart LSP to reload Vale configuration
+          (when (bound-and-true-p lsp-mode)
+            (lsp-workspace-restart (lsp--read-workspace)))))))
+  
+  ;; Bind to a convenient key
+  (map! :map org-mode-map
+        :localleader
+        :desc "Add word to Vale vocabulary"
+        "v a" #'my/vale-add-word-at-point)
+
   )
 
 

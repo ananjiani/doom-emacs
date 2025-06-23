@@ -324,13 +324,35 @@
         lsp-nix-nixd-server-path "nixd")
 
   (add-to-list 'lsp-language-id-configuration '(org-mode . "org"))
+  
+  ;; Define custom action handler for Vale
+  (defun my/vale-action-handler (params)
+    "Handle custom Vale actions."
+    (let ((arguments (cond
+                      ;; If params is already the arguments vector/list
+                      ((or (vectorp params) (and (listp params) (not (hash-table-p params))))
+                       params)
+                      ;; If params is a hash table with arguments
+                      ((hash-table-p params)
+                       (gethash "arguments" params))
+                      ;; Otherwise, assume it's the word directly
+                      (t params))))
+      (when arguments
+        (let ((word (cond
+                     ((vectorp arguments) (aref arguments 0))
+                     ((listp arguments) (car arguments))
+                     ((stringp arguments) arguments)
+                     (t (error "Unknown argument type: %S" arguments)))))
+          (my/vale-add-word-at-point-with-arg word)))))
+  
   (lsp-register-client (make-lsp-client
                         :new-connection (lsp-stdio-connection "vale-ls")
                         :activation-fn (lsp-activate-on "org")
                         :server-id 'vale-ls
                         :initialization-options (lambda ()
                                                   '(:installVale :json-false
-                                                    :syncOnStartup :json-false))))
+                                                    :syncOnStartup :json-false))
+                        :action-handlers (ht ("vale.addToVocabulary" #'my/vale-action-handler))))
 
   ;; Vale code action for adding words to vocabulary  
   (defun my/vale-add-word-at-point ()
@@ -338,22 +360,69 @@
     (interactive)
     (let ((word (thing-at-point 'word t)))
       (when word
-        (let ((vale-vocab-file (expand-file-name "~/Documents/org-roam/.vale/config/vocabularies/OrgRoam/accept.txt")))
-          (message "Adding '%s' to Vale vocabulary" word)
-          ;; Append word to file
-          (with-temp-buffer
-            (insert word "\n")
-            (append-to-file (point-min) (point-max) vale-vocab-file))
-          (message "Successfully added '%s' to Vale vocabulary" word)
-          ;; Restart LSP to reload Vale configuration
-          (when (bound-and-true-p lsp-mode)
-            (lsp-workspace-restart (lsp--read-workspace)))))))
+        (my/vale-add-word-at-point-with-arg word))))
+  
+  (defun my/vale-add-word-at-point-with-arg (word)
+    "Add WORD to Vale's accept.txt vocabulary."
+    (let ((vale-vocab-file (expand-file-name "~/Documents/org-roam/.vale/config/vocabularies/OrgRoam/accept.txt")))
+      (message "Adding '%s' to Vale vocabulary" word)
+      ;; Append word to file
+      (with-temp-buffer
+        (insert word "\n")
+        (append-to-file (point-min) (point-max) vale-vocab-file))
+      (message "Successfully added '%s' to Vale vocabulary" word)
+      ;; Restart LSP to reload Vale configuration
+      (when (bound-and-true-p lsp-mode)
+        (lsp-workspace-restart (lsp--read-workspace)))))
   
   ;; Bind to a convenient key
   (map! :map org-mode-map
         :localleader
         :desc "Add word to Vale vocabulary"
         "v a" #'my/vale-add-word-at-point)
+  
+  ;; Advice to add custom Vale code actions
+  (defun my/vale-code-actions-advice (orig-fun &optional kind)
+    "Add Vale vocabulary code actions to standard LSP code actions."
+    (let ((actions (funcall orig-fun kind))
+          (diagnostics (lsp-cur-line-diagnostics))
+          (seen-words (make-hash-table :test 'equal)))
+      (when (and diagnostics (vectorp diagnostics))
+        (seq-do (lambda (diagnostic)
+                  (when (and (equal (gethash "source" diagnostic) "vale-ls")
+                             (string-match-p "Spelling" (or (gethash "code" diagnostic) "")))
+                    (let* ((range (gethash "range" diagnostic))
+                           (start (gethash "start" range))
+                           (end (gethash "end" range))
+                           (start-char (gethash "character" start))
+                           (end-char (gethash "character" end))
+                           (line (gethash "line" start))
+                           (word (save-excursion
+                                   (goto-char (lsp--position-to-point 
+                                              (lsp-make-position :line line :character start-char)))
+                                   (buffer-substring-no-properties
+                                    (point)
+                                    (lsp--position-to-point 
+                                     (lsp-make-position :line line :character end-char))))))
+                      ;; Only add action if we haven't seen this word yet
+                      (unless (gethash word seen-words)
+                        (puthash word t seen-words)
+                        (push (lsp-make-code-action
+                               :title (format "Add '%s' to Vale vocabulary" word)
+                               :kind "quickfix"
+                               :command? (lsp-make-command
+                                          :title (format "Add '%s' to Vale vocabulary" word)
+                                          :command "vale.addToVocabulary"
+                                          :arguments? (vector word)))
+                              actions)))))
+                diagnostics))
+      actions))
+
+  (advice-add 'lsp-code-actions-at-point :around #'my/vale-code-actions-advice)
+  
+  ;; Also register in default handlers
+  (with-eval-after-load 'lsp-mode
+    (puthash "vale.addToVocabulary" #'my/vale-action-handler lsp--default-action-handlers))
 
   )
 

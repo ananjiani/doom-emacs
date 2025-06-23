@@ -40,7 +40,9 @@
 (setq doom-font (font-spec :family "Hack" :size 20))
 (setq doom-variable-pitch-font (font-spec :family "Inter" :size 24))
 (setq vterm-timer-delay 0.01
-      vterm-shell "fish")
+      vterm-shell "fish"
+      vterm-buffer-name-string "vterm %s")
+
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 
@@ -319,7 +321,19 @@
 (after! lsp-mode
   (setq lsp-pylsp-plugins-ruff-enabled t
         lsp-pylsp-plugins-mypy-enabled t
-        lsp-nix-nixd-server-path "nixd"))
+        lsp-nix-nixd-server-path "nixd")
+
+  (add-to-list 'lsp-language-id-configuration '(org-mode . "org"))
+  (lsp-register-client (make-lsp-client
+                        :new-connection (lsp-stdio-connection "vale-ls")
+                        :activation-fn (lsp-activate-on "org")
+                        :server-id 'vale-ls
+                        :initialization-options (lambda ()
+                                                  '(:installVale :json-false
+                                                    :syncOnStartup :json-false))))
+
+  )
+
 
 (after! dap-mode
   (setq dap-python-debugger 'debugpy))
@@ -389,6 +403,9 @@
                         :key gptel-api-key)
         gptel-default-mode 'org-mode)
   )
+
+(add-hook 'org-mode-hook 'lsp)
+
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.

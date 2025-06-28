@@ -50,14 +50,11 @@
 (package! shrface :disable t)
 (package! consult-org-roam)
 (package! age)
-(package! anki
-  :recipe (:host github :repo "chenyanming/anki.el"))
 (unpin! org-roam)
 (package! org-roam-ui)
 (package! git-auto-commit-mode)
 (package! nov)
 (package! org-download)
-(package! aidermacs)
 ;; (package! flymake-vale
 ;;   :recipe (:host github :repo "tpeacock19/flymake-vale"))
 

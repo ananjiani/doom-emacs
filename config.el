@@ -324,9 +324,20 @@
         lsp-pylsp-plugins-mypy-enabled t
         lsp-nix-nixd-server-path "nixd")
 
-  ;; Load Vale configuration
-  (load! "vale-config")
-  (my/setup-vale-lsp))
+  ;; Ensure org-mode is recognized by LSP
+  (add-to-list 'lsp-language-id-configuration '(org-mode . "org"))
+  
+  ;; Register Vale LSP client directly
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection "vale-ls")
+    :activation-fn (lsp-activate-on "org")
+    :server-id 'vale-ls
+    :initialization-options (lambda ()
+                              '(:installVale :json-false
+                                :syncOnStartup :json-false))))
+
+)
 
 
 (after! dap-mode

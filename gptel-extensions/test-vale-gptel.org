@@ -1,0 +1,25 @@
+#+TITLE: Test Vale-GPTel Integration
+
+* Testing Vale Integration with GPTel
+
+This is a test document to demonstrate the integration between vale-ls and gptel-rewrite.
+
+** Example Text with Issues
+
+This text have some grammar issues. The integration will gonna help fix them. Its very usefull for
+improving writing quality. Their are several problems hear that vale would catch.
+
+** How to Use
+
+1. Select the text region with issues
+2. Use one of the following commands:
+   - ~SPC r v~ - Rewrite with vale errors included as context
+   - ~SPC r V~ - Rewrite with a custom vale-focused directive
+
+The rewrite will include information about specific vale-ls errors found in the selected region.
+
+** Benefits
+
+- The AI will be aware of specific writing issues identified by vale
+- More targeted improvements based on actual problems
+- Combines automated linting with AI-powered rewriting

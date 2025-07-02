@@ -453,3 +453,30 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+
+;; Load gptel extensions
+(load! "gptel-extensions/gptel-vale-integration")
+
+;; Keybindings for gptel-vale integration
+(map! :leader
+      :desc "Rewrite with vale errors" "r v" #'my/gptel-rewrite-with-vale)
+
+;; Customize LSP diagnostics to show vale rule names
+(after! lsp-mode
+  (setq lsp-diagnostic-filter
+        (lambda (params workspace)
+          (let ((diagnostics (gethash "diagnostics" params)))
+            (puthash "diagnostics"
+                     (vconcat
+                      (mapcar (lambda (diagnostic)
+                                (let ((message (gethash "message" diagnostic))
+                                      (code (gethash "code" diagnostic))
+                                      (source (gethash "source" diagnostic)))
+                                  (when (and code (string= source "vale-ls"))
+                                    (puthash "message"
+                                             (format "[%s] %s" code message)
+                                             diagnostic))
+                                  diagnostic))
+                              diagnostics))
+                     params)
+            params))))

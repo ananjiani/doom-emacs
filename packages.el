@@ -40,7 +40,6 @@
 ;; Use `:pin' to specify a particular commit to install. (package!
 ;; builtin-package :pin "1a2b3c4d5e")
 
-(package! exwm :disable t)
 (package! org-super-agenda)
 (package! org-ql)
 (package! olivetti)
@@ -53,8 +52,8 @@
 (unpin! org-roam)
 (package! org-roam-ui)
 (package! git-auto-commit-mode)
-(package! nov)
 (package! org-download)
+(package! elisp-dev-mcp)
 
 ;; Doom's packages are pinned to a specific commit and updated from release to
 ;; release. The `unpin!' macro allows you to unpin single packages...

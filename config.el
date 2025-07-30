@@ -51,6 +51,14 @@
 (setq org-roam-directory "~/Documents/org-roam")
 
 (after! org
+  (font-lock-add-keywords
+   'org-mode
+   '(;; Inline margin notes [mn::text]
+     ("\\[mn::\\([^]]+\\)?\\]"
+      (0 'org-footnote t))
+     ;; Referenced margin notes [mn:label]
+     ("\\[mn:\\([^]:]+\\)\\]"
+      (0 'org-footnote t))))
   (setq org-startup-folded 'fold)
   (setq org-log-done 'note)
   ;; (setq org-agenda-remove-tags t)
@@ -337,7 +345,7 @@
                               '(:installVale :json-false
                                 :syncOnStartup :json-false))))
 
-)
+  )
 
 
 (after! dap-mode
@@ -400,8 +408,8 @@
 (after! gptel
   (setq gptel-model 'deepseek-reasoner
         gptel-backend (gptel-make-deepseek "DeepSeek"
-                        :stream t
-                        :key gptel-api-key)
+                                           :stream t
+                                           :key gptel-api-key)
         gptel-default-mode 'org-mode)
   )
 

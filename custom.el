@@ -4,7 +4,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(safe-local-variable-values
-   '((eval let
+   '((gac-automatically-add-new-files-p nil) (gac-automatically-push-p nil)
+     (gac-automatically-add-new-files-p t) (gac-automatically-push-p t)
+     (eval let
       ((sidenotes-file
         (expand-file-name "ox-hugo-tufte-sidenotes.el"
                           (locate-dominating-file default-directory

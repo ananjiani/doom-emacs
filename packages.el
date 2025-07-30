@@ -43,18 +43,18 @@
 (package! org-super-agenda)
 (package! org-ql)
 (package! olivetti)
-(package! org-modern)
+;; (package! org-modern)
 (package! fzf)
 (package! hyperbole :disable t)
 (package! shrface :disable t)
 (package! consult-org-roam)
 (package! age)
 (unpin! org-roam)
-(package! org-roam-ui)
+;; (package! org-roam-ui)
 (package! git-auto-commit-mode)
 (package! org-download)
 ;; (package! elisp-dev-mcp)
-
+(package! just-mode)
 ;; Doom's packages are pinned to a specific commit and updated from release to
 ;; release. The `unpin!' macro allows you to unpin single packages...
 ;; (unpin! pinned-package)

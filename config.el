@@ -201,6 +201,10 @@
 (org-super-agenda-mode t)
 ;; (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
 
+(defun my/org-roam-filter-by-tag (tag-name)
+  (lambda (node)
+    (member tag-name (org-roam-node-tags node))))
+
 (defun my/org-roam-list-notes-by-tag (tag-name)
   (mapcar #'org-roam-node-file
           (seq-filter
@@ -220,7 +224,11 @@
   )
 
 (add-hook 'org-agenda-mode-hook 'org-agenda-open-hook)
-(with-eval-after-load 'org (global-org-modern-mode))
+;; (with-eval-after-load 'org (global-org-modern-mode))
+
+;; Set up the built-in Emacs tools
+(after! claude-code-ide
+  (claude-code-ide-emacs-tools-setup))
 
 (setq +format-on-save-enabled-modes
       '(not emacs-lisp-mode))
@@ -270,11 +278,6 @@
                                  (string-trim (buffer-substring-no-properties beg end)))
                "INTERLEAVE_PAGE_NOTE" "BRAIN_CHILDREN" okm-parent-property-name "PROPERTIES:\n *:END")))
     (org-roam-preview-default-function)))
-
-
-(defun my/org-roam-filter-by-tag (tag-name)
-  (lambda (node)
-    (member tag-name (org-roam-node-tags node))))
 
 (defun bhankas-org-age-encrypt-and-replace ()
   "Replace current org file with age-encrypted version"
@@ -408,8 +411,8 @@
 (after! gptel
   (setq gptel-model 'deepseek-reasoner
         gptel-backend (gptel-make-deepseek "DeepSeek"
-                                           :stream t
-                                           :key gptel-api-key)
+                        :stream t
+                        :key gptel-api-key)
         gptel-default-mode 'org-mode)
   )
 

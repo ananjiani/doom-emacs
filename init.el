@@ -81,7 +81,7 @@
        vterm                            ; the best terminal emulation in Emacs
 
        :checkers
-       (syntax +childframe +flymake +icons) ; tasing you for every semicolon you forget
+       (syntax +childframe +icons) ; tasing you for every semicolon you forget
        ;; (spell +aspell)
                                         ; tasing you for misspelling mispelling
        ;; grammar           ; tasing grammar mistake every you make
@@ -158,7 +158,7 @@
        ;;nim               ; python + lisp at the speed of c
        (nix +lsp)                       ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       (org +roam2 +pandoc +noter +dragndrop +pretty +hugo)
+       (org +roam2 +pandoc +noter +dragndrop +hugo)
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional

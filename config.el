@@ -39,10 +39,11 @@
 (setq display-line-numbers-type 'relative)
 (setq doom-font (font-spec :family "Hack" :size 20))
 (setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 24))
-(setq vterm-timer-delay 0.01
-      vterm-shell "fish"
-      vterm-buffer-name-string "vterm %s")
-
+(after! vterm
+  (evil-set-initial-state 'vterm-mode 'emacs)
+  (setq vterm-timer-delay 0.01
+        vterm-shell "fish"
+        vterm-buffer-name-string "vterm %s"))
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -464,6 +465,12 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+;;
+
+(require 'acp)
+(require 'agent-shell)
+(setq agent-shell-anthropic-authentication
+      (agent-shell-anthropic-make-authentication :login t))
 
 ;; Load gptel extensions
 (load! "gptel-extensions/gptel-vale-integration")

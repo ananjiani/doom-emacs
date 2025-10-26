@@ -4,7 +4,23 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(safe-local-variable-values
-   '((gac-automatically-add-new-files-p nil) (gac-automatically-push-p nil)
+   '((eval let
+      ((sidenotes-file
+        (expand-file-name "../ox-hugo-tufte-sidenotes.el"
+                          (locate-dominating-file default-directory
+                                                  ".dir-locals.el"))))
+      (when
+          (and (file-exists-p sidenotes-file)
+               (not (featurep 'ox-hugo-tufte-sidenotes)))
+        (load-file sidenotes-file)))
+     (eval let
+      ((sidenotes-file
+        (expand-file-name "../ox-hugo-tufte-sidenotes.el" default-directory)))
+      (when
+          (and (file-exists-p sidenotes-file)
+               (not (featurep 'ox-hugo-tufte-sidenotes)))
+        (load-file sidenotes-file)))
+     (gac-automatically-add-new-files-p nil) (gac-automatically-push-p nil)
      (gac-automatically-add-new-files-p t) (gac-automatically-push-p t)
      (eval let
       ((sidenotes-file

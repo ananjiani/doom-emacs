@@ -55,6 +55,8 @@
 (package! org-download)
 ;; (package! elisp-dev-mcp)
 (package! just-mode)
+(package! mermaid-mode)
+(package! ob-mermaid)
 (package! shell-maker)
 (package! acp :recipe (:host github :repo "xenodium/acp.el"))
 (package! agent-shell :recipe (:host github :repo "xenodium/agent-shell"))

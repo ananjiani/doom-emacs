@@ -475,6 +475,15 @@
 ;; Load gptel extensions
 (load! "gptel-extensions/gptel-vale-integration")
 
+;; Mermaid diagram support
+(use-package! ob-mermaid
+  :after org
+  :config
+  (setq ob-mermaid-cli-path "mmdc")
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   (append org-babel-load-languages '((mermaid . t)))))
+
 ;; Keybindings for gptel-vale integration
 (map! :leader
       :desc "Rewrite with vale errors" "r v" #'my/gptel-rewrite-with-vale)

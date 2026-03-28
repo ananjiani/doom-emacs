@@ -168,8 +168,6 @@
 
 
 
-;; (org-roam-db-autosync-mode)
-;; (setq org-roam-database-connector 'emacsql-sqlite-builtin)
 (setq org-super-agenda-groups
       '(;; Each group has an implicit boolean OR operator between its selectors.
         ;; Set order of multiple groups at once
@@ -305,7 +303,9 @@
 (use-package! org-roam
   :after (org age org-roam-dailies)
   :init
-  (add-to-list 'auto-mode-alist '("\\.org\\.age" . org-mode)))
+  (add-to-list 'auto-mode-alist '("\\.org\\.age" . org-mode))
+  :config
+  (org-roam-db-autosync-mode))
 
 (use-package! age
   :after (org)
@@ -468,10 +468,6 @@
 ;;
 
 (require 'acp)
-(require 'agent-shell)
-(setq agent-shell-anthropic-authentication
-      (agent-shell-anthropic-make-authentication :login t))
-
 ;; Load gptel extensions
 (load! "gptel-extensions/gptel-vale-integration")
 

@@ -407,6 +407,10 @@
   (setq org-noter-highlight-selected-text t
         org-noter-always-create-frame nil))
 
+(after! org-mcp
+  (setq org-mcp-allowed-files
+        (directory-files-recursively "~/Documents/org-roam" "\\.org$'")))
+
 (setq browse-url-browser-function 'browse-url-firefox)
 
 (after! gptel
@@ -468,6 +472,10 @@
 ;;
 
 (require 'acp)
+
+;; Load bundled Ink mode snippets
+(with-eval-after-load 'yasnippet
+  (ink-load-snippets))
 ;; Load gptel extensions
 (load! "gptel-extensions/gptel-vale-integration")
 
@@ -486,20 +494,31 @@
 
 ;; Customize LSP diagnostics to show vale rule names
 (after! lsp-mode
+  (defun my/lsp-get (obj key string-key)
+    "Get value from OBJ using KEY (keyword) or STRING-KEY (string) depending on type."
+    (if (hash-table-p obj)
+        (gethash string-key obj)
+      (plist-get obj key)))
+
+  (defun my/lsp-put (obj key string-key value)
+    "Set VALUE in OBJ using KEY (keyword) or STRING-KEY (string) depending on type."
+    (if (hash-table-p obj)
+        (puthash string-key value obj)
+      (plist-put obj key value)))
+
   (setq lsp-diagnostic-filter
         (lambda (params workspace)
-          (let ((diagnostics (gethash "diagnostics" params)))
-            (puthash "diagnostics"
-                     (vconcat
-                      (mapcar (lambda (diagnostic)
-                                (let ((message (gethash "message" diagnostic))
-                                      (code (gethash "code" diagnostic))
-                                      (source (gethash "source" diagnostic)))
-                                  (when (and code (string= source "vale-ls"))
-                                    (puthash "message"
-                                             (format "[%s] %s" code message)
-                                             diagnostic))
-                                  diagnostic))
-                              diagnostics))
-                     params)
+          (let ((diagnostics (my/lsp-get params :diagnostics "diagnostics")))
+            (when diagnostics
+              (my/lsp-put params :diagnostics "diagnostics"
+                          (vconcat
+                           (mapcar (lambda (diagnostic)
+                                     (let ((message (my/lsp-get diagnostic :message "message"))
+                                           (code (my/lsp-get diagnostic :code "code"))
+                                           (source (my/lsp-get diagnostic :source "source")))
+                                       (when (and code (stringp source) (string= source "vale-ls"))
+                                         (my/lsp-put diagnostic :message "message"
+                                                     (format "[%s] %s" code message)))
+                                       diagnostic))
+                                   diagnostics))))
             params))))

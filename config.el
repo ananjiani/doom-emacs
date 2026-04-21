@@ -411,7 +411,7 @@
   (setq org-mcp-allowed-files
         (directory-files-recursively "~/Documents/org-roam" "\\.org$'")))
 
-(setq browse-url-browser-function 'browse-url-firefox)
+(setq browse-url-browser-function 'browse-url-xdg-open)
 
 (after! gptel
   (setq gptel-model 'deepseek-reasoner

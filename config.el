@@ -3,6 +3,10 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
+;; NixOS: add nix-provided tree-sitter grammars to search path
+(when-let ((nix-grammars (getenv "TREESIT_GRAMMAR_PATH")))
+  (add-to-list 'treesit-extra-load-path nix-grammars))
+
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.

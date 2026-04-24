@@ -521,6 +521,25 @@ If DATE is Monday before noon, return the previous week."
             (push note notes)))))
     (nreverse notes)))
 
+(defun my/org-roam--clean-note (note)
+  "Strip prefix and time from NOTE.
+Removes `- Note taken on [date time] \\' or `- CLOSING NOTE [date time]',
+leaving just [date] followed by the note text."
+  (let ((cleaned note))
+    ;; Strip the prefix: "- Note taken on " or "- CLOSING NOTE "
+    (setq cleaned (replace-regexp-in-string
+                   "^- Note taken on " "" cleaned))
+    (setq cleaned (replace-regexp-in-string
+                   "^- CLOSING NOTE " "" cleaned))
+    ;; Strip time from timestamp: [YYYY-MM-DD Ddd HH:MM] -> [YYYY-MM-DD]
+    (setq cleaned (replace-regexp-in-string
+                   "\\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\) [^\\]]+\\]"
+                   "[\\1]" cleaned))
+    ;; Strip trailing backslashes
+    (setq cleaned (replace-regexp-in-string
+                   "\\\\\\s-*" "" cleaned))
+    (string-trim cleaned)))
+
 (defun my/org-roam--extract-clock-entries (loogbook-text)
   "Extract CLOCK lines from LOGBOOK-TEXT."
   (let ((clocks '()))
@@ -609,7 +628,7 @@ Defaults to the previous week when invoked on Monday before noon."
               (let* ((lb (my/org-roam--loogbook-text marker))
                      (notes (my/org-roam--extract-loogbook-notes lb)))
                 (dolist (note notes)
-                  (insert (format "   %s\n" note))))
+                  (insert (format "   %s\n" (my/org-roam--clean-note note)))))
               (insert "\n")))
         (insert "  No completed tasks this week.\n"))
       (insert "\n")
@@ -622,12 +641,9 @@ Defaults to the previous week when invoked on Monday before noon."
                   (marker (nth 1 task)))
               (insert (format "** %s\n" heading))
               (let* ((lb (my/org-roam--loogbook-text marker))
-                     (clocks (my/org-roam--extract-clock-entries lb))
                      (notes (my/org-roam--extract-loogbook-notes lb)))
-                (dolist (clock clocks)
-                  (insert (format "   %s\n" clock)))
                 (dolist (note notes)
-                  (insert (format "   %s\n" note))))
+                  (insert (format "   %s\n" (my/org-roam--clean-note note)))))
               (insert "\n")))
         (insert "  No clocked tasks this week.\n"))
       (insert "\n")

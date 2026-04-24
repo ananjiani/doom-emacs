@@ -132,6 +132,10 @@ Returns nil if NOTE has no content after stripping the prefix."
         (delete-region (point-min) (point)))
        ((re-search-forward "^- CLOSING NOTE \\[[^]]+\\][ \t]*" nil t)
         (delete-region (point-min) (point))))
+      ;; Remove stray backslash-only lines left by org continuation markers
+      (goto-char (point-min))
+      (while (re-search-forward "^[ \t]*\\\\[ \t]*$" nil t)
+        (replace-match ""))
       (setq body (string-trim (buffer-substring-no-properties (point-min) (point-max)))))
     ;; Split body into lines
     (when (not (string-empty-p body))

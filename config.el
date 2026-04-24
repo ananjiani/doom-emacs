@@ -505,7 +505,7 @@ If DATE is Monday before noon, return the previous week."
           (let ((note (string-trim (match-string 0))))
             (forward-line 1)
             (while (looking-at "^[ \t]+\\S-")
-              (setq note (concat note " " (string-trim (buffer-substring-no-properties
+              (setq note (concat note "\n" (string-trim (buffer-substring-no-properties
                                                        (line-beginning-position) (line-end-position)))))
               (forward-line 1))
             (push note notes)))
@@ -515,7 +515,7 @@ If DATE is Monday before noon, return the previous week."
           (let ((note (string-trim (match-string 0))))
             (forward-line 1)
             (while (looking-at "^[ \t]+\\S-")
-              (setq note (concat note " " (string-trim (buffer-substring-no-properties
+              (setq note (concat note "\n" (string-trim (buffer-substring-no-properties
                                                        (line-beginning-position) (line-end-position)))))
               (forward-line 1))
             (push note notes)))))
@@ -533,11 +533,14 @@ leaving just [date] followed by the note text."
                    "^- CLOSING NOTE " "" cleaned))
     ;; Strip time from timestamp: [YYYY-MM-DD Ddd HH:MM] -> [YYYY-MM-DD]
     (setq cleaned (replace-regexp-in-string
-                   "\\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\) [^\\]]+\\]"
+                   "\\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\) [^]]+]"
                    "[\\1]" cleaned))
-    ;; Strip trailing backslashes
+    ;; Strip trailing backslashes and extra whitespace
     (setq cleaned (replace-regexp-in-string
                    "\\\\\\s-*" "" cleaned))
+    (setq cleaned (replace-regexp-in-string "  +" " " cleaned))
+    ;; Indent continuation lines to align with first line
+    (setq cleaned (replace-regexp-in-string "\n" "\n   " cleaned))
     (string-trim cleaned)))
 
 (defun my/org-roam--extract-clock-entries (loogbook-text)

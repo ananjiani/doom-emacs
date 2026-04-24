@@ -494,19 +494,31 @@ If DATE is Monday before noon, return the previous week."
                 (string-trim (buffer-substring-no-properties drawer-beg drawer-end)))))))))) 
 
 (defun my/org-roam--extract-loogbook-notes (loogbook-text)
-  "Extract CLOSING NOTEs and clock-out notes from LOGBOOK-TEXT."
+  "Extract CLOSING NOTEs and clock-out notes (with continuation lines) from LOGBOOK-TEXT."
   (let ((notes '()))
     (when loogbook-text
       (with-temp-buffer
         (insert loogbook-text)
         (goto-char (point-min))
-        ;; CLOSING NOTEs
+        ;; CLOSING NOTEs (with continuation lines)
         (while (re-search-forward "^- CLOSING NOTE\\(.*\\)" nil t)
-          (push (string-trim (match-string 0)) notes))
-        ;; Clock-out notes
+          (let ((note (string-trim (match-string 0))))
+            (forward-line 1)
+            (while (looking-at "^[ \t]+\\S-")
+              (setq note (concat note " " (string-trim (buffer-substring-no-properties
+                                                       (line-beginning-position) (line-end-position)))))
+              (forward-line 1))
+            (push note notes)))
+        ;; Clock-out notes (with continuation lines)
         (goto-char (point-min))
         (while (re-search-forward "^- Note taken on\\(.*\\)" nil t)
-          (push (string-trim (match-string 0)) notes))))
+          (let ((note (string-trim (match-string 0))))
+            (forward-line 1)
+            (while (looking-at "^[ \t]+\\S-")
+              (setq note (concat note " " (string-trim (buffer-substring-no-properties
+                                                       (line-beginning-position) (line-end-position)))))
+              (forward-line 1))
+            (push note notes)))))
     (nreverse notes)))
 
 (defun my/org-roam--extract-clock-entries (loogbook-text)

@@ -66,6 +66,7 @@
       (0 'org-footnote t))))
   (setq org-startup-folded 'fold)
   (setq org-log-done 'note)
+  (setq org-log-note-clock-out t)
   ;; (setq org-agenda-remove-tags t)
   (setq org-agenda-hide-tags-regexp "meeting\\|agenda\\|@ammar\\|daily\\|naarpr")
   (setq org-agenda-prefix-format '(
@@ -440,6 +441,201 @@
 
 (add-hook 'writeroom-mode-hook #'my/zen-mode-unbold-links)
 (add-hook 'writeroom-mode-hook #'my/zen-mode-restore-links)
+
+;; ---------------------------------------------------------------------------
+;; Weekly Work Log Generator
+;; ---------------------------------------------------------------------------
+
+(defun my/org-roam--week-bounds (&optional date)
+  "Return (START . END) timestamps for the Monday–Friday work week containing DATE.
+If DATE is Monday before noon, return the previous week."
+  (let* ((target (or date (current-time)))
+         (decoded (decode-time target))
+         (dow (nth 6 decoded))    ; 0=Sun, 1=Mon, ...
+         (hour (nth 2 decoded)))
+    (when (and (= dow 1) (< hour 12))
+      (setq target (time-subtract target (days-to-time 7))
+            decoded (decode-time target)
+            dow (nth 6 decoded)))
+    (let* ((monday-offset (if (= dow 0) -6 (- 1 dow)))
+           (monday (time-add target (days-to-time monday-offset)))
+           (friday (time-add monday (days-to-time 4)))
+           (start (encode-time 0 0 0
+                               (nth 3 (decode-time monday))
+                               (nth 4 (decode-time monday))
+                               (nth 5 (decode-time monday))))
+           (end (encode-time 59 59 23
+                             (nth 3 (decode-time friday))
+                             (nth 4 (decode-time friday))
+                             (nth 5 (decode-time friday)))))
+      (cons start end))))
+
+(defun my/org-roam--all-org-files ()
+  "Return all .org files under `org-roam-directory', excluding archives and weekly-logs."
+  (seq-remove (lambda (f)
+                (or (string-suffix-p ".org_archive" f)
+                    (string-match-p "/weekly-logs/" f)))
+              (directory-files-recursively org-roam-directory "\\.org$")))
+
+(defun my/org-roam--loogbook-text (marker)
+  "Return raw text inside the LOGBOOK drawer at MARKER."
+  (when (markerp marker)
+    (with-current-buffer (marker-buffer marker)
+      (save-excursion
+        (goto-char marker)
+        (let* ((element (org-element-at-point))
+               (headline-end (org-element-property :end element)))
+          (when (re-search-forward ":LOGBOOK:" headline-end t)
+            (let ((drawer-beg (line-beginning-position 2))
+                  (drawer-end (save-excursion
+                                (when (re-search-forward "^ *:END:" headline-end t)
+                                  (line-beginning-position)))))
+              (when drawer-end
+                (string-trim (buffer-substring-no-properties drawer-beg drawer-end)))))))))) 
+
+(defun my/org-roam--extract-loogbook-notes (loogbook-text)
+  "Extract CLOSING NOTEs and clock-out notes from LOGBOOK-TEXT."
+  (let ((notes '()))
+    (when loogbook-text
+      (with-temp-buffer
+        (insert loogbook-text)
+        (goto-char (point-min))
+        ;; CLOSING NOTEs
+        (while (re-search-forward "^- CLOSING NOTE\\(.*\\)" nil t)
+          (push (string-trim (match-string 0)) notes))
+        ;; Clock-out notes
+        (goto-char (point-min))
+        (while (re-search-forward "^- Note taken on\\(.*\\)" nil t)
+          (push (string-trim (match-string 0)) notes))))
+    (nreverse notes)))
+
+(defun my/org-roam--extract-clock-entries (loogbook-text)
+  "Extract CLOCK lines from LOGBOOK-TEXT."
+  (let ((clocks '()))
+    (when loogbook-text
+      (with-temp-buffer
+        (insert loogbook-text)
+        (goto-char (point-min))
+        (while (re-search-forward "^CLOCK:.*" nil t)
+          (push (string-trim (match-string 0)) clocks))))
+    (nreverse clocks)))
+
+(defun my/org-roam-generate-weekly-log ()
+  "Generate a weekly work log from org-roam clock notes and DONE tasks.
+Defaults to the previous week when invoked on Monday before noon."
+  (interactive)
+  (require 'org-ql)
+  (require 'org-id)
+  (let* ((week-bounds (my/org-roam--week-bounds))
+         (start-ts (car week-bounds))
+         (end-ts (cdr week-bounds))
+         (start-str (format-time-string "%Y-%m-%d" start-ts))
+         (end-str (format-time-string "%Y-%m-%d" end-ts))
+         (week-label (format "%s–%s"
+                             (format-time-string "%B %d" start-ts)
+                             (format-time-string "%B %d, %Y" end-ts)))
+         (filename (expand-file-name
+                    (format "work/weekly-logs/%s-to-%s-work-log.org"
+                            start-str end-str)
+                    org-roam-directory))
+         ;; Query DONE tasks (category "work" anywhere in org-roam tree)
+         (all-org-files (my/org-roam--all-org-files))
+           (done-tasks (org-ql-query
+                         :select (lambda ()
+                                   (list (org-get-heading t t t t)
+                                         (org-entry-get nil "CLOSED")
+                                         (point-marker)
+                                         (buffer-file-name)))
+                         :from all-org-files
+                         :where `(and (category "work")
+                                      (closed :from ,start-str :to ,end-str))))
+           (clocked-tasks (org-ql-query
+                            :select (lambda ()
+                                      (list (org-get-heading t t t t)
+                                            (point-marker)
+                                            (buffer-file-name)))
+                            :from all-org-files
+                            :where `(and (category "work")
+                                         (clocked :from ,start-str :to ,end-str))))
+           ;; Meetings: only specific files
+           (meetings
+            (let ((matches '())
+                  (meeting-files '("~/Documents/org-roam/work/meetings.org"
+                                   "~/Documents/org-roam/work/lmic-weekly-meetings.org")))
+              (dolist (mf meeting-files)
+                (when (file-exists-p mf)
+                  (with-temp-buffer
+                    (insert-file-contents mf)
+                    (goto-char (point-min))
+                    (while (re-search-forward "^\\* \\(.*\\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\).*\\)$" nil t)
+                      (let ((date-str (match-string 2)))
+                        (when (and (not (string< date-str start-str))
+                                   (not (string< end-str date-str)))
+                          (push (string-trim (match-string 1)) matches)))))))
+              (nreverse matches))))
+
+    ;; Build report
+    (with-current-buffer (get-buffer-create "*Weekly Work Log*")
+      (erase-buffer)
+      (org-mode)
+      (insert (format "#+title: Work Log: %s\n" week-label))
+      (insert (format ":PROPERTIES:\n:ID:       %s\n:END:\n" (org-id-new)))
+      (insert "#+filetags: :work:weekly-log:\n\n")
+
+      ;; Completed This Week
+      (insert "* Completed This Week\n")
+      (if done-tasks
+          (dolist (task done-tasks)
+            (let ((heading (nth 0 task))
+                  (closed (nth 1 task))
+                  (marker (nth 2 task)))
+              (insert (format "** %s\n" heading))
+              (when closed
+                (insert (format "   Closed: %s\n" closed)))
+              (let* ((lb (my/org-roam--loogbook-text marker))
+                     (notes (my/org-roam--extract-loogbook-notes lb)))
+                (dolist (note notes)
+                  (insert (format "   %s\n" note))))
+              (insert "\n")))
+        (insert "  No completed tasks this week.\n"))
+      (insert "\n")
+
+      ;; Work in Progress
+      (insert "* Work in Progress\n")
+      (if clocked-tasks
+          (dolist (task clocked-tasks)
+            (let ((heading (nth 0 task))
+                  (marker (nth 1 task)))
+              (insert (format "** %s\n" heading))
+              (let* ((lb (my/org-roam--loogbook-text marker))
+                     (clocks (my/org-roam--extract-clock-entries lb))
+                     (notes (my/org-roam--extract-loogbook-notes lb)))
+                (dolist (clock clocks)
+                  (insert (format "   %s\n" clock)))
+                (dolist (note notes)
+                  (insert (format "   %s\n" note))))
+              (insert "\n")))
+        (insert "  No clocked tasks this week.\n"))
+      (insert "\n")
+
+      ;; Key Meetings
+      (insert "* Key Meetings\n")
+      (if meetings
+          (dolist (m meetings)
+            (insert (format "- %s\n" m)))
+        (insert "  No meetings recorded this week.\n"))
+      (insert "\n")
+
+      ;; Time Summary
+      (insert "* Time Summary\n")
+      (insert "  (Hours per project can be computed manually or enhanced later.)\n")
+
+      ;; Save and register with org-roam
+      (write-file filename)
+      (when (fboundp 'org-roam-db-update-file)
+        (org-roam-db-update-file filename))
+      (message "Weekly log saved to %s" filename)
+      (pop-to-buffer (current-buffer)))))
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an

@@ -560,6 +560,7 @@ Defaults to the previous week when invoked on Monday before noon."
                                          (buffer-file-name)))
                          :from all-org-files
                          :where `(and (category "work")
+                                      (todo "DONE")
                                       (closed :from ,start-str :to ,end-str))))
            (clocked-tasks (org-ql-query
                             :select (lambda ()
@@ -568,6 +569,7 @@ Defaults to the previous week when invoked on Monday before noon."
                                             (buffer-file-name)))
                             :from all-org-files
                             :where `(and (category "work")
+                                         (todo)
                                          (clocked :from ,start-str :to ,end-str))))
            ;; Meetings: only specific files
            (meetings

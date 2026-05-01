@@ -8,7 +8,9 @@
 ;;
 ;; Usage: M-x my/org-roam-generate-weekly-log
 ;;
-;; Input: clock notes ("Note taken on ...") in LOGBOOK drawers of org-roam files.
+;; Input: clock notes, CLOSING NOTEs, and plain notes in LOGBOOK drawers of
+;;        org-roam files.  Also captures CLOSING NOTEs outside the LOGBOOK
+;;        drawer and plain "- text" notes after CLOCK lines.
 ;; Output: an .org file in work/weekly-logs/ with one section per project.
 
 ;;; Code:
@@ -43,27 +45,59 @@ If DATE is Monday before noon, return the previous week."
       (cons start end))))
 
 (defun my/org-roam--all-org-files ()
-  "Return all .org files under `org-roam-directory', excluding archives and weekly-logs."
-  (seq-remove (lambda (f)
-                (or (string-suffix-p ".org_archive" f)
-                    (string-match-p "/weekly-logs/" f)))
-              (directory-files-recursively org-roam-directory "\\.org$")))
+  "Return .org files under `org-roam-directory' with #+FILETAGS containing `agenda',
+excluding archives and weekly-logs."
+  (seq-filter
+   (lambda (f)
+     (with-temp-buffer
+       (insert-file-contents-literally f nil 0 1024)
+       (goto-char (point-min))
+       (re-search-forward "^#\\+FILETAGS:.*:agenda:" nil t)))
+   (seq-remove (lambda (f)
+                 (or (string-suffix-p ".org_archive" f)
+                     (string-match-p "/weekly-logs/" f)))
+               (directory-files-recursively org-roam-directory "\\.org$"))))
 
-(defun my/org-roam--loogbook-text (marker)
-  "Return raw text inside the LOGBOOK drawer at MARKER."
+(defun my/org-roam--heading-text (marker)
+  "Return all LOGBOOK content plus CLOSING NOTEs outside the drawer for heading at MARKER."
   (when (markerp marker)
     (with-current-buffer (marker-buffer marker)
       (save-excursion
         (goto-char marker)
         (let* ((element (org-element-at-point))
-               (headline-end (org-element-property :end element)))
+               (headline-end (org-element-property :end element))
+               (result ""))
+          ;; Grab LOGBOOK drawer content
           (when (re-search-forward ":LOGBOOK:" headline-end t)
             (let ((drawer-beg (line-beginning-position 2))
                   (drawer-end (save-excursion
                                 (when (re-search-forward "^ *:END:" headline-end t)
                                   (line-beginning-position)))))
-              (when drawer-end
-                (string-trim (buffer-substring-no-properties drawer-beg drawer-end))))))))))
+              (when (and drawer-beg drawer-end)
+                (setq result (buffer-substring-no-properties drawer-beg drawer-end)))))
+          ;; Grab CLOSING NOTEs outside the LOGBOOK drawer
+          ;; Only scan direct body — stop at subheadings to avoid duplicates
+          (goto-char marker)
+          (forward-line 1) ; skip the heading line itself
+          (let ((in-drawer nil))
+            (while (< (point) headline-end)
+              (cond
+               ((looking-at "^\\*") (goto-char headline-end)) ; stop at subheadings
+               ((looking-at ":LOGBOOK:") (setq in-drawer t) (forward-line 1))
+               ((and in-drawer (looking-at ":END:")) (setq in-drawer nil) (forward-line 1))
+               ((and (not in-drawer) (looking-at "^- CLOSING NOTE"))
+                (let ((note-text (buffer-substring-no-properties
+                                  (line-beginning-position) (line-end-position))))
+                  (forward-line 1)
+                  (while (looking-at "^[ \t]+\\S-")
+                    (setq note-text (concat note-text "\n"
+                                            (buffer-substring-no-properties
+                                             (line-beginning-position)
+                                             (line-end-position))))
+                    (forward-line 1))
+                  (setq result (concat result "\n" note-text))))
+               (t (forward-line 1)))))
+          (string-trim result))))))
 
 (defun my/org-roam--top-level-heading (marker)
   "Return the text of the top-level (* ) ancestor heading at MARKER."
@@ -79,32 +113,63 @@ If DATE is Monday before noon, return the previous week."
          (time (encode-time 0 0 0 (nth 3 parsed) (nth 4 parsed) (nth 5 parsed))))
     (format-time-string "%a" time)))
 
+(defun my/org-roam--collect-continuation-lines ()
+  "Collect indented continuation lines from point, return as trimmed string list.
+Point must be on the first line after the note line.  Advances point past them."
+  (let ((cont-lines '()))
+    (while (looking-at "^[ \t]+\\S-")
+      (push (string-trim (buffer-substring-no-properties
+                          (line-beginning-position) (line-end-position)))
+            cont-lines)
+      (forward-line 1))
+    (nreverse cont-lines)))
+
 (defun my/org-roam--extract-loogbook-notes (loogbook-text)
-  "Extract CLOSING NOTEs and clock-out notes (with continuation lines) from LOGBOOK-TEXT."
+  "Extract CLOSING NOTEs, Note-taken-on notes, and plain notes after CLOCK lines from text.
+Plain notes inherit their date from the CLOCK line above them."
   (let ((notes '()))
     (when loogbook-text
       (with-temp-buffer
         (insert loogbook-text)
         (goto-char (point-min))
-        ;; CLOSING NOTEs (with continuation lines)
+
+        ;; Pass 1: CLOSING NOTEs (with continuation lines)
         (while (re-search-forward "^- CLOSING NOTE\\(.*\\)" nil t)
           (let ((note (string-trim (match-string 0))))
             (forward-line 1)
-            (while (looking-at "^[ \t]+\\S-")
-              (setq note (concat note "\n" (string-trim (buffer-substring-no-properties
-                                                       (line-beginning-position) (line-end-position)))))
-              (forward-line 1))
+            (dolist (cl (my/org-roam--collect-continuation-lines))
+              (setq note (concat note "\n" cl)))
             (push note notes)))
-        ;; Clock-out notes (with continuation lines)
+
+        ;; Pass 2: Note-taken-on notes (with continuation lines)
         (goto-char (point-min))
         (while (re-search-forward "^- Note taken on\\(.*\\)" nil t)
           (let ((note (string-trim (match-string 0))))
             (forward-line 1)
-            (while (looking-at "^[ \t]+\\S-")
-              (setq note (concat note "\n" (string-trim (buffer-substring-no-properties
-                                                       (line-beginning-position) (line-end-position)))))
-              (forward-line 1))
-            (push note notes)))))
+            (dolist (cl (my/org-roam--collect-continuation-lines))
+              (setq note (concat note "\n" cl)))
+            (push note notes)))
+
+        ;; Pass 3: Plain notes after CLOCK lines — inherit date from the CLOCK timestamp
+        (goto-char (point-min))
+        (while (re-search-forward "^CLOCK: \\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)" nil t)
+          (let ((clock-date (match-string 1)))
+            (forward-line 1)
+            ;; Collect all consecutive plain "- " list items after this CLOCK line
+            (while (looking-at "^\\s-*- \\(.+\\)")
+              (let ((raw (string-trim (match-string 0))))
+                (if (or (string-match-p "^- Note taken on" raw)
+                        (string-match-p "^- CLOSING NOTE" raw))
+                    ;; Skip already-captured formats, but advance point
+                    (forward-line 1)
+                  ;; Build a synthetic note with the clock's date
+                  (let ((note (format "- Plain note [%s] %s"
+                                      clock-date
+                                      (string-trim (match-string 1)))))
+                    (forward-line 1)
+                    (dolist (cl (my/org-roam--collect-continuation-lines))
+                      (setq note (concat note "\n" cl)))
+                    (push note notes)))))))))
     (nreverse notes)))
 
 (defun my/org-roam--note-date (note)
@@ -113,6 +178,8 @@ If DATE is Monday before noon, return the previous week."
    ((string-match "- Note taken on \\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)" note)
     (match-string 1 note))
    ((string-match "- CLOSING NOTE \\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)" note)
+    (match-string 1 note))
+   ((string-match "- Plain note \\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)\\]" note)
     (match-string 1 note))
    (t nil)))
 
@@ -131,24 +198,41 @@ Returns nil if NOTE has no content after stripping the prefix."
        ((re-search-forward "^- Note taken on \\[[^]]+\\][ \t]*\\\\?[ \t]*\n?" nil t)
         (delete-region (point-min) (point)))
        ((re-search-forward "^- CLOSING NOTE \\[[^]]+\\][ \t]*" nil t)
+        (delete-region (point-min) (point)))
+       ((re-search-forward "^- Plain note \\[[^]]+\\][ \t]*" nil t)
         (delete-region (point-min) (point))))
       ;; Remove stray backslash-only lines left by org continuation markers
       (goto-char (point-min))
-      (while (re-search-forward "^[ \t]*\\\\[ \t]*$" nil t)
+      (while (re-search-forward "^[ \t]*\\\\+[ \t]*$" nil t)
         (replace-match ""))
       (setq body (string-trim (buffer-substring-no-properties (point-min) (point-max)))))
     ;; Split body into lines
     (when (not (string-empty-p body))
-      (let ((first t))
-        (dolist (line (split-string body "\n" t "[ \t]*"))
-          (setq line (string-trim line))
-          (when (not (string-empty-p line))
-            (push (if (and date-str first)
-                      (format "[%s] %s" (my/org-roam--date-to-day-abbrev date-str) line)
-                    line)
-                  lines)
-            (setq first nil)))
-        (nreverse lines)))))
+      (dolist (line (split-string body "\n" t "[ \t]*"))
+        (setq line (string-trim line))
+        (when (not (string-empty-p line))
+          (push (if date-str
+                    (format "[%s] %s" (my/org-roam--date-to-day-abbrev date-str) line)
+                  line)
+                lines))))
+    (nreverse lines)))
+
+(defun my/org-roam--find-closed-this-week (files start-str end-str)
+  "Scan FILES for headings closed between START-STR and END-STR (YYYY-MM-DD).
+Return a list of markers to those headings."
+  (let ((markers '())
+        (closed-re "^CLOSED: \\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)"))
+    (dolist (f files)
+      (with-current-buffer (find-file-noselect f)
+        (goto-char (point-min))
+        (while (re-search-forward closed-re nil t)
+          (let ((closed-date (match-string 1)))
+            (when (and (not (string< closed-date start-str))
+                       (not (string< end-str closed-date)))
+              (save-excursion
+                (org-back-to-heading t)
+                (push (point-marker) markers)))))))
+    (delete-dups markers)))
 
 ;;; --- Main ---
 
@@ -170,34 +254,49 @@ Groups tasks by their top-level project heading."
                             start-str end-str)
                     org-roam-directory))
          (all-org-files (my/org-roam--all-org-files))
-         ;; Query ALL tasks with clock entries in the date range
+         ;; Query tasks with clock entries in the date range
          (clocked-tasks (org-ql-query
                           :select (lambda ()
                                     (list (point-marker)))
                           :from all-org-files
                           :where `(and (category "work")
                                        (clocked :from ,start-str :to ,end-str))))
+         ;; Find tasks closed this week (may overlap with clocked)
+         (closed-markers (my/org-roam--find-closed-this-week
+                          all-org-files start-str end-str))
          ;; Collect: project-name -> list of (date-str . lines)
-         (projects (make-hash-table :test 'equal)))
+         (projects (make-hash-table :test 'equal))
+         (seen-markers (make-hash-table :test 'equal)))
 
-    ;; Group notes by project
-    (dolist (task clocked-tasks)
-      (let* ((marker (nth 0 task))
-             (project (my/org-roam--top-level-heading marker))
-             (lb (my/org-roam--loogbook-text marker))
-             (notes (my/org-roam--extract-loogbook-notes lb)))
-        (dolist (note notes)
-          (let ((note-date (my/org-roam--note-date note)))
-            ;; Only include notes from this week
-            (when (or (null note-date)
-                      (and (not (string< note-date start-str))
-                           (not (string< end-str note-date))))
-              (let ((cleaned (my/org-roam--clean-note-lines note)))
-                (when cleaned
-                  (puthash project
-                           (append (gethash project projects '())
-                                   (list (cons (or note-date "9999-99-99") cleaned)))
-                           projects))))))))
+    ;; Helper to process a task marker
+    (cl-flet ((process-marker (marker)
+                (when (and (markerp marker)
+                           (not (gethash (cons (marker-buffer marker) (marker-position marker))
+                                           seen-markers)))
+                  (puthash (cons (marker-buffer marker) (marker-position marker))
+                           t seen-markers)
+                  (let* ((project (my/org-roam--top-level-heading marker))
+                         (text (my/org-roam--heading-text marker))
+                         (notes (my/org-roam--extract-loogbook-notes text)))
+                    (dolist (note notes)
+                      (let ((note-date (my/org-roam--note-date note)))
+                        ;; Only include notes from this week
+                        (when (or (null note-date)
+                                  (and (not (string< note-date start-str))
+                                       (not (string< end-str note-date))))
+                          (let ((cleaned (my/org-roam--clean-note-lines note)))
+                            (when cleaned
+                              (puthash project
+                                       (append (gethash project projects '())
+                                               (list (cons (or note-date "9999-99-99") cleaned)))
+                                       projects))))))))))
+
+      ;; Process clocked tasks
+      (dolist (task clocked-tasks)
+        (process-marker (nth 0 task)))
+      ;; Process closed tasks (deduped by seen-markers)
+      (dolist (m closed-markers)
+        (process-marker m)))
 
     ;; Build report
     (with-current-buffer (get-buffer-create "*Weekly Work Log*")
@@ -226,6 +325,17 @@ Groups tasks by their top-level project heading."
         (org-roam-db-update-file filename))
       (message "Weekly log saved to %s" filename)
       (pop-to-buffer (current-buffer)))))
+
+(defun my/org-note-to-active-clock ()
+  "Add a note to the currently clocked task."
+  (interactive)
+  (let ((marker org-clock-hd-marker))
+    (unless (and marker (marker-buffer marker))
+      (user-error "No active clock"))
+    (save-window-excursion
+      (with-current-buffer (marker-buffer marker)
+        (goto-char marker)
+        (org-add-note)))))
 
 (provide 'my-org-roam-weekly-log)
 ;;; my-org-roam-weekly-log.el ends here

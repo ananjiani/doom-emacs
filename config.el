@@ -67,6 +67,7 @@
   (setq org-startup-folded 'fold)
   (setq org-log-done 'note)
   (setq org-log-note-clock-out t)
+  (map! :map org-mode-map :localleader "c n" #'my/org-note-to-active-clock)
   ;; (setq org-agenda-remove-tags t)
   (setq org-agenda-hide-tags-regexp "meeting\\|agenda\\|@ammar\\|daily\\|naarpr")
   (setq org-agenda-prefix-format '(

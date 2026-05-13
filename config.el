@@ -124,7 +124,11 @@
 
                           ((org-ql-block-header "Backlog")))))
           ("p" "Priority"
-           ((org-ql-block '(and (todo "TODO" "PROJ") (priority >= "C")))))))
+           ((org-ql-block '(and (todo "TODO" "PROJ") (priority >= "C")))))
+          ("q" "Reading questions"
+           ((org-ql-block '(and (todo "TODO")
+                                (file-path "/literature/"))
+                        ((org-ql-block-header "Open reading questions")))))))
 
 
   ;; (setq org-agenda-todo-keyword-format "")

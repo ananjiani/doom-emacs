@@ -494,6 +494,12 @@
 ;; Load gptel extensions
 (load! "gptel-extensions/gptel-vale-integration")
 
+;; Image pasting into Org mode
+(after! org-download
+  (setq org-download-method 'directory
+        org-download-image-dir "images"
+        org-download-heading-lvl nil))
+
 ;; Mermaid diagram support
 (use-package! ob-mermaid
   :after org

@@ -415,7 +415,19 @@
 
 (after! org-noter
   (setq org-noter-highlight-selected-text t
-        org-noter-always-create-frame nil))
+        org-noter-always-create-frame nil
+        org-noter-notes-search-path '("~/Documents/org-roam/literature")))
+
+;; EPUB reading with nov.el
+(use-package! nov
+  :mode ("\\.epub\\'" . nov-mode)
+  :config
+  (setq nov-text-width 80)
+  ;; Use emacs state so nov's default keys work (n/p/SPC for nav)
+  (add-hook 'nov-mode-hook (lambda () (evil-set-initial-state 'nov-mode 'emacs)))
+  (add-hook 'nov-mode-hook 'olivetti-mode)
+  ;; Disable line numbers in nov-mode for cleaner reading
+  (add-hook 'nov-mode-hook (lambda () (display-line-numbers-mode -1))))
 
 (after! org-mcp
   (setq org-mcp-allowed-files

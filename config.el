@@ -513,6 +513,14 @@
         org-download-heading-lvl nil))
 
 ;; Mermaid diagram support
+(after! mermaid-mode
+  (setq mermaid-flags "--scale 2"))
+
+(after! markdown-mode
+  (map! :map markdown-mode-map
+        :localleader
+        :desc "Compile Mermaid region" "m" #'mermaid-compile-region))
+
 (use-package! ob-mermaid
   :after org
   :config

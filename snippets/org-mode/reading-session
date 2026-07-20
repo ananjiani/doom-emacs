@@ -7,6 +7,13 @@
 :GUIDE:
 What you read — chapter, section, pages.
 :END:
+*** Notes
+:GUIDE:
+Transcriptions of margin notes and highlights worth keeping in this file's context.
+The during-reading capture happens in the book — highlights, margin annotations, scratchpad. During processing, you review those and decide what's worth transcribing here.
+Most margin notes won't get transcribed, and that's correct. The ones that capture something worth retrieving later get written in your own words.
+If a note captures something worth retrieving OUTSIDE this book's context, go create or update the concept node and link back. That's promotion. It happens by doing it, not by filing it under a separate heading.
+:END:
 *** Summary
 :GUIDE:
 2-3 sentences in your own words: what was the argument in this section?
@@ -16,7 +23,7 @@ Do this first, from memory while context is fresh.
 :END:
 *** Reflection
 :GUIDE:
-Your engagement with the text after the reading session. This is where questions come from — the pre-articulate stage before they sharpen into specific TODOs.
+Your engagement with the text after the reading session. This is where questions come from — the pre-articulate stage before they sharpen into specific STUDY TODOs.
 
 Concretely:
 - Reactions to specific claims or moves ("this argument felt forced; I'm not sure he's earned the necessity yet")
@@ -28,25 +35,18 @@ Concretely:
 
 Heuristic: if the sentence starts with "I think..." or "this reminds me of..." or "I'm not sure about..." it belongs here.
 
-Not everything in reflection becomes a question. Some stays as observation or reaction. But the questions that end up as TODOs almost always started here.
+Not everything in reflection becomes a question. Some stays as observation or reaction. But the questions that end up as STUDY TODOs almost always started here.
 
 Don't force content into it when the reading was straightforward and you don't have much response. The point is to give reactions a place to live when they exist, not to manufacture them when they don't.
 :END:
-*** Notes
-:GUIDE:
-Transcriptions of margin notes and highlights worth keeping in this file's context.
-The during-reading capture happens in the book — highlights, margin annotations, scratchpad. During processing, you review those and decide what's worth transcribing here.
-Most margin notes won't get transcribed, and that's correct. The ones that capture something worth retrieving later get written in your own words.
-If a note captures something worth retrieving OUTSIDE this book's context, go create or update the concept node and link back. That's promotion. It happens by doing it, not by filing it under a separate heading.
-:END:
 *** Questions
 :GUIDE:
-Articulated TODOs extracted from reflection when they're specific enough to track.
+Articulated STUDY TODOs extracted from reflection when they're specific enough to track.
 Be specific enough that future-you understands what the difficulty was.
 Link to existing concept nodes where applicable — this is how questions feed into your research tracks.
 Questions are the connective tissue of the whole system. They link books together.
 When a question resolves, mark it DONE with a one-line closure note.
 If the resolution produced substantive understanding, update the concept node.
-Questions unresolved when you finish the book become standalone question nodes in zk/.
+Questions unresolved when you finish the book become standalone question nodes in zk/ and get refiled to projects.org as a STUDY entry
 Those nodes feed into the next book's Live questions. The cycle continues.
 :END:

@@ -88,31 +88,31 @@
         `(("tinker" ,(list (nerd-icons-faicon "nf-fa-cogs")) nil nil :ascent center)
           ("rare" ,(list (nerd-icons-faicon "nf-fa-pencil")) nil nil :ascent center)
           ("organizing" ,(list (nerd-icons-faicon "nf-fa-hand_rock_o")) nil nil :ascent center)
-          ("naarpr" ,(list (nerd-icons-faicon "nf-fa-renren")) nil nil :ascent center)
-          ("unit" ,(list (nerd-icons-faicon "nf-fa-rebel")) nil nil :ascent center)
-          ("igf" ,(list (nerd-icons-faicon "nf-fae-dice")) nil nil :ascent center)
           ("ha" ,(list (nerd-icons-faicon "nf-fa-home")) nil nil :ascent center)
           ("personal" ,(list (nerd-icons-mdicon "nf-md-human")) nil nil :ascent center)
           ("work" ,(list (nerd-icons-faicon "nf-fa-graduation_cap")) nil nil :ascent center)))
   (setq org-agenda-tags-column -125)
 
   (setq org-agenda-custom-commands
-        '(("n" "NAARPR Dallas"
-           ((org-ql-block '(and (todo "TODO")
-                                (category "naarpr"))
-                          ((org-ql-block-header "Tasks")))
-            (org-ql-block '(and (todo)
-                                (not (todo "TODO"))
-                                (category "naarpr"))
-                          ((org-ql-block-header "Backlog")))))
-          ("u" "Unit"
-           ((org-ql-block '(and (todo "TODO")
-                                (category "unit"))
-                          ((org-ql-block-header "Tasks")))
-            (org-ql-block '(and (todo)
-                                (not (todo "TODO"))
-                                (category "unit"))
-                          ((org-ql-block-header "Backlog")))))
+        '(
+          ("d" "Daily"
+           ((agenda "")
+            (org-ql-block '(and (todo "TODO" "PROJ")
+                                (not (scheduled))
+                                (not (deadline))
+                                (priority))
+                          ((org-ql-block-header "On deck (undated)")))
+            (org-ql-block '(and (todo "TODO")
+                                (category "inbox"))
+                          ((org-ql-block-header "Inbox")))))
+          ("r" "Review: undated backlog"
+           ((org-ql-block '(and (todo "TODO" "PROJ")
+                                (not (scheduled))
+                                (not (deadline))
+                                (not (priority))
+                                (not (category "inbox"))
+                                (not (property "STYLE" "habit")))
+                          ((org-ql-block-header "Undated backlog — date it, flag it, demote to IDEA, or kill it")))))
           ("w" "Work"
            ((org-ql-block '(and (category "work")
                                 (todo "TODO" "PROJ"))
@@ -128,7 +128,7 @@
           ("q" "Reading questions"
            ((org-ql-block '(and (todo "TODO")
                                 (file-path "/literature/"))
-                        ((org-ql-block-header "Open reading questions")))))))
+                          ((org-ql-block-header "Open reading questions")))))))
 
 
   ;; (setq org-agenda-todo-keyword-format "")
@@ -136,9 +136,10 @@
                                 ("i" "Inbox" entry (file "inbox.org") "* TODO %?\n/Entered on/ %U")
                                 ("w" "Work" entry (file "~/Documents/org-roam/work/work-projects.org") "* TODO %?\n/Entered on/ %U")
                                 ("p" "Personal" entry (file+headline "~/Documents/org-roam/projects.org" "Personal") "* TODO %?\n/Entered on/ %U")
+                                ("o" "Organizing" entry (file+headline "~/Documents/org-roam/projects.org" "Organizig") "* TODO %?\n/Entered on/ %U")
                                 ("r" "Red Reading List" item (file"~/Documents/org-roam/red-notes/red-reading-list.org") "- %?")
-                                ("n" "NAARPR Dallas Meeting Agenda Item" item (file+headline "~/Documents/org-roam/naarpr-dallas-notes/meeting-notes.org" "Next Meeting") "- %?")
-                                ("u" "Unit Meeting Agenda Item" item (file+headline "~/Documents/org-roam/unit-notes/pc-meeting-notes.org" "Next Meeting") "- %?")
+                                ;; ("n" "NAARPR Dallas Meeting Agenda Item" item (file+headline "~/Documents/org-roam/naarpr-dallas-notes/meeting-notes.org" "Next Meeting") "- %?")
+                                ;; ("u" "Unit Meeting Agenda Item" item (file+headline "~/Documents/org-roam/unit-notes/pc-meeting-notes.org" "Next Meeting") "- %?")
                                 )))
 (after! org-roam
   (setq org-roam-capture-templates
@@ -181,8 +182,8 @@
 (setq org-super-agenda-groups
       '(;; Each group has an implicit boolean OR operator between its selectors.
         ;; Set order of multiple groups at once
-        (:order-multi (99 (:name "Unit (team)" :and (:category "unit" :not (:tag "@ammar")))
-                          (:name "NAARPR Dallas (team)" :and (:category "naarpr" :not (:tag "@ammar")))))
+        ;; (:order-multi (99 (:name "Unit (team)" :and (:category "unit" :not (:tag "@ammar")))
+        ;;                   (:name "NAARPR Dallas (team)" :and (:category "naarpr" :not (:tag "@ammar")))))
         (:name "Reschedule"
          :scheduled past
          :face 'error)

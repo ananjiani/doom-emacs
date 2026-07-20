@@ -76,6 +76,8 @@
            "WAIT(w)" "HOLD(h)" "IDEA(i)" "|" "DONE(d)" "KILL(k)")
           (sequence "[ ](T)" "[-](S)" "[?](W)" "|" "[X](D)")
           (sequence "|" "OKAY(o)" "YES(y)" "NO(n)")))
+  (add-to-list 'org-todo-keyword-faces
+               '("STUDY" :foreground "#83a598" :weight bold))
   ;; (setq org-agenda-remove-tags t)
   (setq org-agenda-hide-tags-regexp "meeting\\|agenda\\|@ammar\\|daily\\|naarpr")
   (setq org-agenda-prefix-format '(

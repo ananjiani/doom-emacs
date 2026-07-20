@@ -68,6 +68,14 @@
   (setq org-log-done 'note)
   (setq org-log-note-clock-out t)
   (map! :map org-mode-map :localleader "c n" #'my/org-note-to-active-clock)
+  ;; Doom's default keywords plus STUDY: study-mode work (open questions,
+  ;; reading) as opposed to actionable TODOs. Agenda action views query
+  ;; (todo "TODO" "PROJ") and ignore it; the "s" Study command collects it.
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "PROJ(p)" "LOOP(r)" "STRT(s)" "STUDY(u)"
+           "WAIT(w)" "HOLD(h)" "IDEA(i)" "|" "DONE(d)" "KILL(k)")
+          (sequence "[ ](T)" "[-](S)" "[?](W)" "|" "[X](D)")
+          (sequence "|" "OKAY(o)" "YES(y)" "NO(n)")))
   ;; (setq org-agenda-remove-tags t)
   (setq org-agenda-hide-tags-regexp "meeting\\|agenda\\|@ammar\\|daily\\|naarpr")
   (setq org-agenda-prefix-format '(
@@ -113,6 +121,11 @@
                                 (not (category "inbox"))
                                 (not (property "STYLE" "habit")))
                           ((org-ql-block-header "Undated backlog — date it, flag it, demote to IDEA, or kill it")))))
+          ("s" "Study"
+           ((org-ql-block '(or (todo "STUDY")
+                               (and (todo "TODO")
+                                    (file-path "/literature/")))
+                          ((org-ql-block-header "Open questions & reading")))))
           ("w" "Work"
            ((org-ql-block '(and (category "work")
                                 (todo "TODO" "PROJ"))

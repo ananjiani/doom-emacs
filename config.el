@@ -124,9 +124,7 @@
                                 (not (property "STYLE" "habit")))
                           ((org-ql-block-header "Undated backlog — date it, flag it, demote to IDEA, or kill it")))))
           ("s" "Study"
-           ((org-ql-block '(or (todo "STUDY")
-                               (and (todo "TODO")
-                                    (path "/literature/")))
+           ((org-ql-block '(todo "STUDY")
                           ((org-ql-block-header "Open questions & reading")))))
           ("w" "Work"
            ((org-ql-block '(and (category "work")
@@ -139,11 +137,7 @@
 
                           ((org-ql-block-header "Backlog")))))
           ("p" "Priority"
-           ((org-ql-block '(and (todo "TODO" "PROJ") (priority >= "C")))))
-          ("q" "Reading questions"
-           ((org-ql-block '(and (todo "TODO")
-                                (path "/literature/"))
-                          ((org-ql-block-header "Open reading questions")))))))
+           ((org-ql-block '(and (todo "TODO" "PROJ") (priority >= "C")))))))
 
 
   ;; (setq org-agenda-todo-keyword-format "")

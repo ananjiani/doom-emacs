@@ -43,10 +43,9 @@
 (setq display-line-numbers-type 'relative)
 (setq doom-font (font-spec :family "Hack" :size 20))
 (setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 24))
-(after! ghostel
-  (setq ghostel-module-auto-install 'download
-        ghostel-module-directory
-        (expand-file-name "ghostel/" (or (getenv "XDG_DATA_HOME") "~/.local/share/"))))
+(setq ghostel-module-auto-install 'download
+      ghostel-module-directory
+      (expand-file-name "ghostel/" (or (getenv "XDG_DATA_HOME") "~/.local/share/")))
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!

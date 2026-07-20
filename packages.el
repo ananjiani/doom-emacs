@@ -49,7 +49,6 @@
 (package! shrface :disable t)
 (package! consult-org-roam)
 (package! age)
-(unpin! org-roam)
 ;; (package! org-roam-ui)
 (package! git-auto-commit-mode)
 (package! org-download)

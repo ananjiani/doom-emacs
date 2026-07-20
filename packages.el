@@ -63,6 +63,9 @@
 (package! mcp-server-lib)
 (package! org-mcp)
 (package! nov)
+;; ponytail: Doom pins broken Ghostel v0.43; remove when :term ghostel pins >= v0.44.
+(package! ghostel :pin "2191afe3049fc785c6fd2b1ab6b826daf500ffbe")
+(package! evil-ghostel :pin "2191afe3049fc785c6fd2b1ab6b826daf500ffbe")
 ;; (package! claude-code-ide
 ;;   :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
 ;; Doom's packages are pinned to a specific commit and updated from release to

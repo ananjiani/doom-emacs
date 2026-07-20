@@ -320,10 +320,13 @@
         (doom/delete-this-file current-file-name t)
         (find-file encr-file-name)))))
 
+;; Register unconditionally at startup: buffers visited before org-roam's
+;; :after chain loads would otherwise land in fundamental-mode and break
+;; org-ql/agenda over encrypted notes.
+(add-to-list 'auto-mode-alist '("\\.org\\.age\\'" . org-mode))
+
 (use-package! org-roam
   :after (org age org-roam-dailies)
-  :init
-  (add-to-list 'auto-mode-alist '("\\.org\\.age" . org-mode))
   :config
   (org-roam-db-autosync-mode))
 

@@ -126,7 +126,7 @@
           ("s" "Study"
            ((org-ql-block '(or (todo "STUDY")
                                (and (todo "TODO")
-                                    (file-path "/literature/")))
+                                    (path "/literature/")))
                           ((org-ql-block-header "Open questions & reading")))))
           ("w" "Work"
            ((org-ql-block '(and (category "work")
@@ -142,7 +142,7 @@
            ((org-ql-block '(and (todo "TODO" "PROJ") (priority >= "C")))))
           ("q" "Reading questions"
            ((org-ql-block '(and (todo "TODO")
-                                (file-path "/literature/"))
+                                (path "/literature/"))
                           ((org-ql-block-header "Open reading questions")))))))
 
 

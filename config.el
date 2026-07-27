@@ -105,6 +105,8 @@
         '(
           ("d" "Daily"
            ((agenda "")
+            (org-ql-block '(todo "WAIT" "HOLD")
+                          ((org-ql-block-header "Awaiting")))
             (org-ql-block '(and (todo "TODO" "PROJ")
                                 (not (scheduled))
                                 (not (deadline))

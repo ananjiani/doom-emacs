@@ -525,6 +525,11 @@
         org-download-image-dir "images"
         org-download-heading-lvl nil))
 
+;; Argdown argument-map support
+(after! org
+  (load! "lisp/ob-argdown")
+  (add-to-list 'org-babel-load-languages '(argdown . t)))
+
 ;; Mermaid diagram support
 (after! mermaid-mode
   (setq mermaid-flags "--scale 2"))

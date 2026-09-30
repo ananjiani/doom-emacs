@@ -6,47 +6,54 @@
 *** Scope:
 :GUIDE:
 What you read — chapter, section, pages.
+The session date records when you read. You can complete Summary, Reflection, and Questions later.
 :END:
 *** Notes
 :GUIDE:
-Transcriptions of margin notes and highlights worth keeping in this file's context.
-The during-reading capture happens in the book — highlights, margin annotations, scratchpad. During processing, you review those and decide what's worth transcribing here.
-Most margin notes won't get transcribed, and that's correct. The ones that capture something worth retrieving later get written in your own words.
-If a note captures something worth retrieving OUTSIDE this book's context, go create or update the concept node and link back. That's promotion. It happens by doing it, not by filing it under a separate heading.
+Your workspace while reading.
+- Follow the text's headings when useful.
+- Restate claims in your own words and explain how they connect.
+- Add reactions, links, and inline Q: questions where they arise.
+- Keep exact quotations distinct from your paraphrases. Include page or section references where useful.
+- Distinguish what the text says from your interpretation and outside explanations. Mark uncertain claims, including AI explanations, for checking.
+
+Write here directly. Notes do not need to begin as Readwise highlights.
+Use Readwise for passages you want to see again in daily review, not as a required copy of these notes.
 :END:
 *** Summary
 :GUIDE:
-2-3 sentences in your own words: what was the argument in this section?
-Documentary. What the text says, not what you think about it.
-Heuristic: if the sentence starts with "the author argues that..." it belongs here.
-Do this first, from memory while context is fresh.
+After the reading chunk, summarize from memory with the text and your notes out of view.
+Explain the main claims and how they connect. Describe the author's argument, not your assessment of it.
+Use prose or an outline. Let the material determine the length; do not reproduce every reading note.
+Then check the text and your notes. Correct errors and fill important gaps.
+This can happen later, not necessarily in the same sitting as reading.
 :END:
 *** Reflection
 :GUIDE:
-Your engagement with the text after the reading session. This is where questions come from — the pre-articulate stage before they sharpen into specific STUDY TODOs.
+Review your notes and revisit unclear passages.
+Answer inline questions where the text resolves them.
 
-Concretely:
-- Reactions to specific claims or moves ("this argument felt forced; I'm not sure he's earned the necessity yet")
-- Connections to other things you've read ("this reminds me of something in WITBD about workers' consciousness")
-- Connections to your own context or ongoing concerns
-- What surprised you or contradicted your prior understanding
-- Vague confusions that aren't yet specific enough to be questions ("something about how this term is being used feels off")
-- The ONE thing you most want to remember from this session
+Add what this second look reveals:
+- What changed in your understanding?
+- What connections or disagreements now seem important?
+- What do you still find unclear, and why?
 
-Heuristic: if the sentence starts with "I think..." or "this reminds me of..." or "I'm not sure about..." it belongs here.
-
-Not everything in reflection becomes a question. Some stays as observation or reaction. But the questions that end up as STUDY TODOs almost always started here.
-
-Don't force content into it when the reading was straightforward and you don't have much response. The point is to give reactions a place to live when they exist, not to manufacture them when they don't.
+Do not copy reactions already recorded under Notes. Refer back to them or develop them further.
+Leave this section empty if the review adds nothing.
 :END:
 *** Questions
 :GUIDE:
-Articulated STUDY TODOs extracted from reflection when they're specific enough to track.
-Be specific enough that future-you understands what the difficulty was.
-Link to existing concept nodes where applicable — this is how questions feed into your research tracks.
-Questions are the connective tissue of the whole system. They link books together.
-When a question resolves, mark it DONE with a one-line closure note.
-If the resolution produced substantive understanding, update the concept node.
-Questions unresolved when you finish the book become standalone question nodes in zk/ and get refiled to projects.org as a STUDY entry
-Those nodes feed into the next book's Live questions. The cycle continues.
+Keep questions that remain after review as STUDY headings beneath this heading.
+They can come from Notes, Reflection, or gaps exposed by the Summary.
+State each question clearly enough that future-you understands the difficulty.
+
+Before the next session, review earlier open questions.
+When the text answers one, mark it DONE. Add a short answer and a passage reference.
+Update an existing concept node if the answer adds useful understanding.
+
+At book completion, review the remaining questions.
+Promote questions worth pursuing beyond the book into new or existing zk question nodes.
+Add a linked STUDY entry in projects.org to keep that work visible.
+Leave book-specific uncertainties here unless they warrant further study.
+Not every unanswered question needs a node.
 :END:

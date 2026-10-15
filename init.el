@@ -33,8 +33,7 @@
        doom                             ; what makes DOOM look the way it does
        doom-dashboard                   ; a nifty splash screen for Emacs
        ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
-       (emoji +ascii +github +unicode)
-                                        ; 🙂
+       ;;(emoji +ascii +github +unicode) ; emojify rescans buffers; Emacs 31 renders emoji natively
        hl-todo            ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        indent-guides      ; highlighted indent columns
        ;; (ligatures +fira)  ; ligatures and symbols to make your code pretty again
@@ -82,7 +81,7 @@
 
        :checkers
        (syntax +childframe +icons) ; tasing you for every semicolon you forget
-       (spell +flyspell +aspell +everywhere)
+       (spell +aspell +everywhere)      ; spell-fu: much lighter than flyspell
                                         ; tasing you for misspelling mispelling
        ;; grammar           ; tasing grammar mistake every you make
 

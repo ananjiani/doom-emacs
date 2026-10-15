@@ -40,7 +40,10 @@
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type 'relative)
+;; Absolute numbers: relative ones redraw every line on each cursor move.
+(setq display-line-numbers-type t)
+;; Level 4 is the heaviest tree-sitter highlighting; 3 is the Emacs default.
+(setq treesit-font-lock-level 3)
 (setq doom-font (font-spec :family "Hack" :size 20))
 (setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 24))
 (setq ghostel-module-auto-install 'download
